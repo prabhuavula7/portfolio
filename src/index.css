@@ -2,7 +2,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html,
+html
+{
+  scroll-behavior: smooth;
+}
 body,
 #root {
   margin: 0;

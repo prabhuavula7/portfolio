@@ -286,7 +286,7 @@ function App() {
 
             <main>
                 {/* Hero/Landing Section */}
-                <section id="home" className="relative bg-section-dark text-white flex items-center justify-center min-h-screen pt-20 overflow-hidden">
+                <section id="home" className="relative bg-section-dark text-white flex items-center justify-center min-h-screen pt-20 overflow-x-hidden">
                     {/* Three.js Canvas */}
                     <canvas ref={threeJsCanvasRef} id="threejs-canvas"></canvas>
 
@@ -457,7 +457,7 @@ function App() {
                         <h2 className="text-4xl font-bold text-center mb-12 text-heading">My Projects</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-                            <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
+                            <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF7F50?text=Sana" alt="Sana" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">Sana - Your Empathetic AI Companion</h3>
@@ -485,7 +485,7 @@ function App() {
                                 </div>
                             </div>
 
-                            <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
+                            <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF4500?text=docQA" alt="docQA" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">docQA - an Autonomous AI for your documents</h3>
@@ -516,7 +516,7 @@ function App() {
                                 </div>
                             </div>
 
-                            <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
+                            <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF7F50?text=AI+Chess" alt="AI Chess" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">AI Chess</h3>
@@ -544,7 +544,7 @@ function App() {
                                 </div>
                             </div>
 
-                            <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
+                            <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF4500?text=Churn+Toolkit" alt="Churn Insights Toolkit" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">Churn Insights Toolkit</h3>
@@ -572,7 +572,7 @@ function App() {
                                 </div>
                             </div>
 
-                            <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
+                            <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF7F50?text=Rhea" alt="Rhea" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">Rhea</h3>
@@ -600,7 +600,7 @@ function App() {
                                 </div>
                             </div>
 
-                            <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
+                            <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF4500?text=Nuri" alt="Nuri" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">Nuri</h3>
@@ -629,7 +629,7 @@ function App() {
                                 </div>
                             </div>
 
-                            <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
+                            <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF7F50?text=JetScope" alt="JetScope" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">JetScope</h3>
