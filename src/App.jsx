@@ -9,6 +9,9 @@ import './index.css'; // Import your main CSS file
 
 function App() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    useEffect(() => {
+      document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'auto';
+    }, [isMobileMenuOpen]);
     const threeJsCanvasRef = useRef(null);
 
     useEffect(() => {
@@ -239,16 +242,32 @@ function App() {
                     <div className="flex items-center space-x-4">
                         {/* Mobile Menu Button */}
                         <div className="md:hidden">
-                            <button id="mobile-menu-button" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-header-link focus:outline-none focus:text-header-link-hover">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                                </svg>
-                            </button>
+                          <button
+                            id="mobile-menu-button"
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="text-black dark:text-white focus:outline-none"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                          </button>
                         </div>
                     </div>
                 </nav>
                 {/* Mobile Menu */}
-                <div id="mobile-menu" className={`mobile-menu md:hidden mobile-menu-bg shadow-inner ${isMobileMenuOpen ? 'open' : ''}`}>
+                <div id="mobile-menu" className={`md:hidden fixed inset-0 bg-background z-40 transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'} bg-white text-black dark:bg-black dark:text-white`}>
+                  {/* Close Button */}
+                  <div className="w-full flex justify-end px-6 pt-6">
+                    <button
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-black dark:text-white focus:outline-none"
+                      aria-label="Close Mobile Menu"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                     <div className="flex flex-col items-center py-4 space-y-4">
                         <a href="#about" onClick={() => scrollToSection('about')} className="text-header-link hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">About</a>
                         <a href="#experience" onClick={() => scrollToSection('experience')} className="text-header-link hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">Experience</a>
@@ -260,8 +279,7 @@ function App() {
                         {/* Theme Toggle Button */}
                         <div className="w-full flex justify-center py-2">
                           {ThemeToggleButton()}
-                        </div>
-
+                      </div>
                     </div>
                 </div>
             </header>
@@ -327,192 +345,28 @@ function App() {
                             </p>
                                 <div className="mt-8">
                                     <h3 className="text-2xl font-semibold text-heading mb-4">My Skills</h3>
-                                    <div className="flex flex-wrap gap-3">
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Python</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">R</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">SQL</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">JavaScript</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">React</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">HTML/CSS</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Go</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Linear Algebra</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Statistics</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Machine Learning</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Deep Learning</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">NLP</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">LLMs</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">RAG</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">GenAI</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Statistical Modelling</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">PyTorch</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">TensorFlow</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Hadoop</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Spark</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Google Cloud Platform</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">AWS</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Microsoft Azure</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Spark</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Hive</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">PostgreSQL</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Qdrant</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Tableau</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Power BI</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Docker</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Kubernetes</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Kafka</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">BigQuery</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Airflow</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Snowflake</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">Version Control - Git</span>
-                                        <span className="bg-white text-black dark:bg-black dark:text-white
-                                          text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                          hover:bg-orange-500 hover:text-white dark:hover:text-black
-                                          hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                          transition duration-200">@Risk</span>
+                                    <div className="flex flex-wrap gap-3 mt-4">
+                                      {[
+                                        "Python", "R", "SQL", "JavaScript", "React", "HTML/CSS", "Go",
+                                        "Linear Algebra", "Statistics", "Statistical Modelling",
+                                        "Machine Learning", "Deep Learning", "NLP", "LLMs", "RAG", "GenAI",
+                                        "PyTorch", "TensorFlow", "Hadoop", "Spark", "Hive",
+                                        "Google Cloud Platform", "AWS", "Microsoft Azure",
+                                        "PostgreSQL", "Qdrant", "BigQuery", "Snowflake", "Airflow",
+                                        "Kafka", "Docker", "Kubernetes", "Tableau", "Power BI",
+                                        "Version Control - Git", "@Risk"
+                                      ].map((skill, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="bg-white text-black dark:bg-zinc-800 dark:text-white
+                                            text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
+                                            hover:bg-orange-500 hover:text-black
+                                            hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
+                                            transition duration-200"
+                                        >
+                                          {skill}
+                                        </span>
+                                      ))}
                                     </div>
                                 </div>
                             </div>
@@ -577,7 +431,7 @@ function App() {
                         <p className="text-sub-content dark:text-zinc-400">2022 – 2024</p>
                         <ul className="list-disc list-inside mt-3 text-content dark:text-zinc-300 text-sm">
                           <li>Coursework:
-                            Design and Analysis of Algorithms - CS 535, Advanced Database Organization - CS 525, Advanced Operating Systems - CS 550, Computer Networks I - CS 542, Computer Networks II - CS 544, Software Project Management - CS 587, Data Preparation and Analysis - CSP 571, Analytics for Decision Making - MBA 504, User Centred Design - CSP 588, Big Data Technologies - CSP 554, Artificial Intelligence - CS 480</li>
+                            Design and Analysis of Algorithms, Advanced Database Organization, Advanced Operating Systems, Computer Networks I, Computer Networks II, Software Project Management, Data Preparation and Analysis, Analytics for Decision Making, User Centred Design, Big Data Technologies, Artificial Intelligence</li>
                           <li>GPA: 3.5/4.0</li>
                         </ul>
                       </div>
@@ -612,7 +466,7 @@ function App() {
                                     </p>
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">LLMs</span>
-                                        <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">HUgging Face Transformers</span>
+                                        <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Hugging Face Transformers</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Ollama</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">RAG</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">NLP</span>
@@ -691,7 +545,7 @@ function App() {
                             </div>
 
                             <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
-                                <img src="https://placehold.co/600x400/000000/FF7F50?text=Churn+Toolkit" alt="Churn Insights Toolkit" className="w-full h-48 object-cover" />
+                                <img src="https://placehold.co/600x400/000000/FF4500?text=Churn+Toolkit" alt="Churn Insights Toolkit" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">Churn Insights Toolkit</h3>
                                     <p className="text-content mb-4">
@@ -747,7 +601,7 @@ function App() {
                             </div>
 
                             <div className="project-card bg-card rounded-lg shadow-lg overflow-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
-                                <img src="https://placehold.co/600x400/000000/FF7F50?text=Nuri" alt="Nuri" className="w-full h-48 object-cover" />
+                                <img src="https://placehold.co/600x400/000000/FF4500?text=Nuri" alt="Nuri" className="w-full h-48 object-cover" />
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">Nuri</h3>
                                     <p className="text-content mb-4">
