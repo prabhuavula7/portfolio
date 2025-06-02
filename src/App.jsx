@@ -331,36 +331,58 @@ function App() {
                             <p className="mb-4">
                               <strong>Let’s build something incredible.</strong>
                             </p>
-                                <div className="mt-8">
-                                    <h3 className="text-2xl font-semibold text-heading mb-4">My Skills</h3>
-                                    <div className="flex flex-wrap gap-3 mt-4">
-                                      {[
-                                        "Python", "R", "SQL", "JavaScript", "React", "HTML/CSS", "Go",
-                                        "Linear Algebra", "Statistics", "Statistical Modelling",
-                                        "Machine Learning", "Deep Learning", "NLP", "LLMs", "RAG", "GenAI",
-                                        "PyTorch", "TensorFlow", "Hadoop", "Spark", "Hive",
-                                        "Google Cloud Platform", "AWS", "Microsoft Azure",
-                                        "PostgreSQL", "Qdrant", "BigQuery", "Snowflake", "Airflow",
-                                        "Kafka", "Docker", "Kubernetes", "Tableau", "Power BI",
-                                        "Version Control - Git", "@Risk"
-                                      ].map((skill, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="bg-white text-black dark:bg-zinc-800 dark:text-white
-                                            text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-skill
-                                            hover:bg-orange-500 hover:text-black
-                                            hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.5)]
-                                            transition duration-200"
-                                        >
-                                          {skill}
-                                        </span>
-                                      ))}
-                                    </div>
-                                </div>
-                            </div>
+                          </div>
                         </div>
                     </div>
                 </section>
+
+                  <section id="skills" className="py-16 md:py-24 bg-section-light dark:bg-section-dark transition-colors duration-300">
+                  <div className="container mx-auto px-6">
+                    <h2 className="text-4xl font-bold text-center mb-12 text-heading dark:text-white">Technical Skills</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+
+                      {[
+                        {
+                          title: "Languages & Frameworks",
+                          items: ["Python", "R", "SQL", "Java", "JavaScript", "Go", "React", "REST", "TypeScript", "HTML/CSS"],
+                        },
+                        {
+                          title: "ML & Data Science",
+                          items: ["Statistical Modelling", "TensorFlow", "PyTorch", "Keras", "Deep Learning", "Natural Language Processing", "LLMs", "RAG", "GenAI", "Predictive Analytics", "Tableau", "Power BI"],
+                        },
+                        {
+                          title: "Big Data & Cloud",
+                          items: ["Hadoop", "GCP", "AWS", "Azure", "Spark", "Hive", "PostgreSQL", "MongoDB", "Qdrant", "FAISS"],
+                        },
+                        {
+                          title: "DevOps & Tools",
+                          items: ["CI/CD", "SDLC", "Version Control", "Git", "Docker", "Kafka", "Kubernetes", "BigQuery", "Airflow", "Snowflake"],
+                        },
+                      ].map((category, index) => (
+                        <div
+                          key={index}
+                          className="bg-white dark:bg-black border border-card p-6 rounded-xl shadow-md transition duration-300 hover:shadow-[0_0_18px_3px_rgba(255,115,0,0.4)]"
+                        >
+                          <h3 className="text-2xl font-semibold text-heading mb-4 text-black dark:text-white">
+                            {category.title}
+                          </h3>
+                          <div className="flex flex-wrap gap-3">
+                            {category.items.map((skill, i) => (
+                              <span
+                                key={i}
+                                className="bg-orange-100 text-zinc-800 dark:bg-zinc-800 dark:text-white dark:border-white border text-sm font-medium px-4 py-1.5 rounded-full transition duration-200 hover:bg-orange-500 hover:text-black hover:shadow-[0_0_10px_2px_rgba(255,115,0,0.4)] shadow-sm"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+
+                    </div>
+                  </div>
+                </section>
+
 
                 {/* Experience Section */}
                 <section id="experience" className="py-16 md:py-24 bg-section-light">
@@ -684,7 +706,7 @@ function App() {
                       ].map((value, index) => (
                         <div
                           key={index}
-                          className="bg-gray-100 dark:bg-zinc-900 text-black dark:text-white p-6 rounded-lg shadow-md border border-gray-300 dark:border-zinc-700 transition-all"
+                          className="bg-gray-100 dark:bg-zinc-900 text-black dark:text-white p-6 rounded-lg shadow-md border border-gray-300 dark:border-zinc-700 transition-all hover:shadow-[0_0_20px_4px_rgba(255,115,0,0.25)]"
                         >
                           <h3 className="text-xl font-semibold mb-2 text-orange-600 dark:text-orange-400">
                             {value.title}
