@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom/client'; // Import ReactDOM for rendering
-import * as THREE from 'three'; // Import Three.js directly
-import { Sun, Moon } from 'lucide-react'; // Import icons for theme toggle
+import ReactDOM from 'react-dom/client'; 
+import * as THREE from 'three'; 
+import { Sun, Moon } from 'lucide-react'; 
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import profileImg from './assets/profileImg.jpeg';
-import MobileMenu from './MobileMenu'; // adjust path as needed
-import './index.css'; // Import your main CSS file
+import MobileMenu from './MobileMenu'; 
+import './index.css'; 
+import { Analytics } from "@vercel/analytics/react"
 
 
 function App() {
@@ -42,8 +43,8 @@ function App() {
             paragraph.classList.add('animate-fade-in');
             buttons.classList.remove('opacity-0');
             buttons.classList.add('animate-fade-in');
-        }, spans.length * 80 + 500); // Delay calculated based on number of words and desired pause
-    }, []); // Empty dependency array ensures this effect runs only once after initial render
+        }, spans.length * 80 + 500); 
+    }, []); 
 
     // Effect for Three.js background setup and animation
     useEffect(() => {
@@ -56,91 +57,91 @@ function App() {
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); // alpha: true for transparent background
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); 
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio); // Improve rendering quality on high-DPI screens
+        renderer.setPixelRatio(window.devicePixelRatio); 
 
         camera.position.z = 5;
 
         const geometry = new THREE.BufferGeometry();
         const vertices = [];
-        const numParticles = 1000; // Number of particles
-
+        const numParticles = 1000; 
+        
+        // Generate random vertices for particles
         for (let i = 0; i < numParticles; i++) {
-            const x = (Math.random() - 0.5) * 20; // Spread particles across X-axis
-            const y = (Math.random() - 0.5) * 20; // Spread particles across Y-axis
-            const z = (Math.random() - 0.5) * 20; // Spread particles across Z-axis
+            const x = (Math.random() - 0.5) * 20; 
+            const y = (Math.random() - 0.5) * 20; 
+            const z = (Math.random() - 0.5) * 20; 
             vertices.push(x, y, z);
         }
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
         // Create a material for the particles (orange glowing dots)
         const material = new THREE.PointsMaterial({
-            color: 0xffa500, // Orange color
-            size: 0.05,      // Small size for subtle dots
+            color: 0xffa500, 
+            size: 0.05,      
             transparent: true,
             opacity: 0.8,
-            blending: THREE.AdditiveBlending // For a glowing effect
+            blending: THREE.AdditiveBlending 
         });
+
         // Create the particle system and add it to the scene
         const particles = new THREE.Points(geometry, material);
         scene.add(particles);
-        // Add subtle lighting (optional for particles, but good practice)
-        const ambientLight = new THREE.AmbientLight(0x404040); // Soft white ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040); 
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5); // Directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5); 
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
-        // Mouse interaction variables for camera movement
+        
         let mouseX = 0;
         let mouseY = 0;
         let targetX = 0;
         let targetY = 0;
         let windowHalfX = window.innerWidth / 2;
         let windowHalfY = window.innerHeight / 2;
-        // Event handler for mouse movement
+       
         const onDocumentMouseMove = (event) => {
             mouseX = (event.clientX - windowHalfX);
             mouseY = (event.clientY - windowHalfY);
         };
-        // Event handler for touch movement (for mobile responsiveness)
+        
         const onDocumentTouchMove = (event) => {
             if (event.touches.length === 1) {
                 mouseX = (event.touches[0].pageX - windowHalfX);
                 mouseY = (event.touches[0].pageY - windowHalfY);
             }
         };
-        // Event handler for window resizing
+       
         const onWindowResize = () => {
             windowHalfX = window.innerWidth / 2;
             windowHalfY = window.innerHeight / 2;
             camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix(); // Update camera's aspect ratio
-            renderer.setSize(window.innerWidth, window.innerHeight); // Resize renderer
-            renderer.setPixelRatio(window.devicePixelRatio); // Adjust pixel ratio
+            camera.updateProjectionMatrix(); 
+            renderer.setSize(window.innerWidth, window.innerHeight); 
+            renderer.setPixelRatio(window.devicePixelRatio);
         };
         // Add event listeners
         document.addEventListener('mousemove', onDocumentMouseMove);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize);
+
         // Animation loop for Three.js
         const animate = () => {
-            requestAnimationFrame(animate); // Request next animation frame
-            // Smoothly move camera based on mouse/touch position
+            requestAnimationFrame(animate); 
             targetX = mouseX * 0.001;
             targetY = mouseY * 0.001;
             camera.position.x += (targetX - camera.position.x) * 0.05;
-            camera.position.y += (-targetY - camera.position.y) * 0.05; // Invert Y for intuitive movement
-            camera.lookAt(scene.position); // Keep camera looking at the center of the scene
-            // Rotate particles for subtle animation
+            camera.position.y += (-targetY - camera.position.y) * 0.05; 
+            camera.lookAt(scene.position); 
             particles.rotation.x += 0.0005;
             particles.rotation.y += 0.001;
 
-            renderer.render(scene, camera); // Render the scene
+            renderer.render(scene, camera); 
         };
 
-        animate(); // Start the animation loop
-        // Cleanup function for useEffect: remove event listeners and dispose Three.js resources
+        animate(); 
+
         return () => {
             document.removeEventListener('mousemove', onDocumentMouseMove);
             document.removeEventListener('touchmove', onDocumentTouchMove);
@@ -149,44 +150,42 @@ function App() {
             material.dispose();
             renderer.dispose();
         };
-    }, []); // Empty dependency array ensures this effect runs only once on mount and cleans up on unmount
-    // Handler for smooth scrolling to sections
+    }, []); 
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
-            setIsMobileMenuOpen(false); // Close mobile menu after clicking a link
+            setIsMobileMenuOpen(false); 
         }
     };
     // Handler for contact form submission
     const handleContactFormSubmit = (e) => {
-        e.preventDefault(); // Prevent default form submission behavior
-        // Extract form data
+        e.preventDefault(); 
+
         const formData = new FormData(e.target);
         const name = formData.get('name');
         const email = formData.get('email');
         const message = formData.get('message');
-        // Log form data to console (for demonstration)
+        
         console.log('Form Submitted!');
         console.log('Name:', name);
         console.log('Email:', email);
         console.log('Message:', message);
-        // Display success message to the user
+       
         const formMessage = document.getElementById('form-message');
         if (formMessage) {
-            formMessage.classList.remove('hidden', 'text-red-600'); // Remove hidden and any previous error color
-            formMessage.classList.add('text-green-600'); // Add success color
+            formMessage.classList.remove('hidden', 'text-red-600'); 
+            formMessage.classList.add('text-green-600'); 
             formMessage.textContent = 'Thank you for your message! I will get back to you soon.';
-            e.target.reset(); // Clear the form fields
-            // Hide the message after 5 seconds
+            e.target.reset(); 
             setTimeout(() => {
                 formMessage.classList.add('hidden');
             }, 5000);
         }
     };
-  // Theme Toggle Logic
+  
   const [theme, setTheme] = useState(() => {
-  // Load saved theme or fall back to 'light'
+  
     console.log("Loading saved theme from localStorage : ", localStorage.getItem("theme"));
     return localStorage.getItem("theme") || 'dark';
   });
@@ -208,7 +207,7 @@ function App() {
     }
 
     localStorage.setItem("theme", theme);
-  }, [theme]); // Ensure this runs only when 'theme' changes
+  }, [theme]); 
 
   const ThemeToggleButton = () => (
     <button
@@ -808,17 +807,16 @@ function App() {
                 ↑
               </button>
             )}
+            <Analytics />
         </div>
     );
 }
 
 // This is the part that tells React to render the App component to the DOM.
-// For Canvas preview, it needs to be in the same file and target a root element.
 const rootElement = document.getElementById('root');
 if (rootElement) {
     ReactDOM.createRoot(rootElement).render(<App />);
 } else {
-    // If 'root' element doesn't exist, create it for Canvas preview
     const newRoot = document.createElement('div');
     newRoot.id = 'root';
     document.body.appendChild(newRoot);
