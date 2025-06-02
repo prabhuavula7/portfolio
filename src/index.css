@@ -5,13 +5,14 @@
 html
 {
   scroll-behavior: smooth;
+  height: auto;
 }
 body,
 #root {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   overflow-x: hidden;
   transition: background-color 0.3s, color 0.3s;
 
@@ -23,7 +24,7 @@ body,
   left: 0;
   z-index: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   pointer-events: none; 
 }
 

@@ -3,16 +3,25 @@ import ReactDOM from 'react-dom/client'; // Import ReactDOM for rendering
 import * as THREE from 'three'; // Import Three.js directly
 import { Sun, Moon } from 'lucide-react'; // Import icons for theme toggle
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
-import profileImg from './assets/profileImg.jpeg'; // adjust path as needed
+import profileImg from './assets/profileImg.jpeg';
+import MobileMenu from './MobileMenu'; // adjust path as needed
 import './index.css'; // Import your main CSS file
 
 
 function App() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    useEffect(() => {
-      document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'auto';
-    }, [isMobileMenuOpen]);
     const threeJsCanvasRef = useRef(null);
+
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+      const handleScroll = () => {
+        setShowScrollTop(window.scrollY > 200);
+      };
+
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     useEffect(() => {
         const introTextElement = document.querySelector('.intro-text');
@@ -97,7 +106,6 @@ function App() {
         // Event handler for touch movement (for mobile responsiveness)
         const onDocumentTouchMove = (event) => {
             if (event.touches.length === 1) {
-                event.preventDefault(); // Prevent scrolling while touching
                 mouseX = (event.touches[0].pageX - windowHalfX);
                 mouseY = (event.touches[0].pageY - windowHalfY);
             }
@@ -222,7 +230,7 @@ function App() {
         <div className="antialiased overflow-x-hidden transition-all duration-500  bg-white dark:bg-black text-black dark:text-white">
 
             {/* Navigation Bar */}
-            <header className="bg-header shadow-md w-full z-50">
+            <header className="bg-header shadow-md w-full">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <a href="#home" onClick={() => scrollToSection('home')} className="text-2xl font-bold text-header-link rounded-lg p-2 hover:text-header-link-hover transition-colors">APK</a>
                     <div className="hidden md:flex space-x-8">
@@ -240,48 +248,29 @@ function App() {
 
                     </div>
                     <div className="flex items-center space-x-4">
-                        {/* Mobile Menu Button */}
-                        <div className="md:hidden">
-                          <button
-                            id="mobile-menu-button"
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            className="text-black dark:text-white focus:outline-none"
-                          >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                          </button>
-                        </div>
-                    </div>
-                </nav>
-                {/* Mobile Menu */}
-                <div id="mobile-menu" className={`md:hidden fixed inset-0 bg-background z-40 transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'} bg-white text-black dark:bg-black dark:text-white`}>
-                  {/* Close Button */}
-                  <div className="w-full flex justify-end px-6 pt-6">
-                    <button
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-black dark:text-white focus:outline-none"
-                      aria-label="Close Mobile Menu"
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                    <div className="flex flex-col items-center py-4 space-y-4">
-                        <a href="#about" onClick={() => scrollToSection('about')} className="text-header-link hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">About</a>
-                        <a href="#experience" onClick={() => scrollToSection('experience')} className="text-header-link hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">Experience</a>
-                        <a href="#education" onClick={() => scrollToSection('education')} className="text-header-link hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">Education</a>
-                        <a href="#projects" onClick={() => scrollToSection('projects')} className="text-header-link hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">Projects</a>
-                        <a href="#values" onClick={() => scrollToSection('values')} className="text-header-link hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">Values</a>
-                        <a href="#contact" onClick={() => scrollToSection('contact')} className="text-header-link 
-                        hover:text-header-link-hover font-medium transition-colors w-full text-center py-2">Contact</a>
-                        {/* Theme Toggle Button */}
-                        <div className="w-full flex justify-center py-2">
-                          {ThemeToggleButton()}
+                      {/* Mobile Menu Button */}
+                      <div className="md:hidden">
+                        <button
+                          id="mobile-menu-button"
+                          onClick={() => setIsMobileMenuOpen(true)}
+                          className="text-black dark:text-white focus:outline-none"
+                        >
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
-                </div>
+                  </nav>
+                    {/* Mobile Menu */}
+                    {isMobileMenuOpen && (
+                      <MobileMenu
+                        onClose={() => setIsMobileMenuOpen(false)}
+                        scrollToSection={scrollToSection}
+                        ThemeToggleButton={ThemeToggleButton}
+                      />
+                    )}
+
             </header>
 
             <main>
@@ -810,8 +799,15 @@ function App() {
                 </div>
               </div>
             </footer>
-
-
+            {showScrollTop && (
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="fixed bottom-6 right-6 z-50 p-3 bg-black/40 text-white backdrop-blur-sm rounded-full shadow-lg hover:bg-orange-500 hover:text-black transition-all duration-300 opacity-90 hover:opacity-100"
+                aria-label="Scroll to top"
+              >
+                ↑
+              </button>
+            )}
         </div>
     );
 }
