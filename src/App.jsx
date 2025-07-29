@@ -309,27 +309,23 @@ function App() {
                             </p>
 
                             <p className="mb-4">
-                              I’m an <strong>AI/ML Engineer</strong> and <strong>Data Scientist</strong> with a passion for building smart, scalable, and impactful solutions that make everyday life easier. Having grown up in <strong>nine cities across four countries</strong>, I bring a uniquely global lens to how I connect with people and approach problems — always curious, always adapting.
+                              I’m an <strong>AI/ML Engineer</strong> and <strong>Data Scientist</strong> passionate about building intelligent, scalable systems that solve real-world problems. Having grown up in <strong>nine cities across four countries</strong>, I’ve developed a global perspective that shapes how I approach challenges, with curiosity, empathy, and adaptability.
                             </p>
 
                             <p className="mb-4">
-                              My journey started back in high school, when I built a simple webpage about aircraft types using HTML, CSS, and Java. What began as curiosity evolved into a deep fascination with how intelligent systems can transform our world. Through two degrees and countless hours of experimentation, I’ve honed my skills in artificial intelligence, machine learning, and data science — and I’m just getting started.
+                            My journey into tech began in high school with a basic webpage about aircraft types. That small project sparked a lifelong fascination with intelligent systems and their potential to transform lives. Since then, through two degrees and hands-on experience across industries, I’ve honed deep expertise in machine learning, data science, and applied AI, from developing real-time inference pipelines to fine-tuning LLMs for critical applications.
                             </p>
 
                             <p className="mb-4">
-                              Whether it’s deploying real-time ML pipelines, fine-tuning models, or solving complex problems with creative code, I thrive at the intersection of <strong>technology, impact, and innovation</strong>. I’m always learning, always evolving — because staying ahead means staying curious.
+                            I love being at the crossroads of technology, impact, and human-centered design, whether it's building AI assistants for mental health, optimizing document intelligence, or leading full-stack ML projects. I believe that staying curious is the key to staying relevant, and I’m always exploring new tools, languages, and ideas.
                             </p>
 
                             <p className="mb-4">
-                              Outside the screen, I’m drawn to the <strong>great outdoors</strong> — you’ll often find me exploring national parks, diving into books on aviation, history, or economics, or out on the field playing cricket, football, or a quick game of chess.
+                            Outside of work, I’m an aviation enthusiast, a lover of history and economics, and an avid explorer, whether that’s hiking through national parks, playing cricket or chess, or diving into a new book.
                             </p>
 
                             <p className="mb-4">
-                              I believe that a well-rounded life fuels bold ideas. And I’m excited to explore how my skills, perspective, and energy can bring value to your next project.
-                            </p>
-
-                            <p className="mb-4">
-                              <strong>Let’s build something incredible.</strong>
+                              I believe that a well-rounded life fuels bold ideas. If you're looking for someone who blends technical depth with creative problem-solving and a people-first mindset, let’s connect and build something meaningful together!
                             </p>
                           </div>
                         </div>
@@ -344,7 +340,7 @@ function App() {
                       {[
                         {
                           title: "Languages & Frameworks",
-                          items: ["Python", "R", "SQL", "Java", "JavaScript", "Go", "React", "REST", "TypeScript", "HTML/CSS"],
+                          items: ["Python", "R", "Node.js", "SQL", "Java", "JavaScript", "Go", "React", "REST", "TypeScript", "HTML/CSS"],
                         },
                         {
                           title: "ML & Data Science",
@@ -393,7 +389,7 @@ function App() {
 
                             <div className="mb-12 flex flex-col md:flex-row items-center md:justify-between w-full">
                                 <div className="md:w-5/12 text-right md:pr-8 mb-4 md:mb-0">
-                                    <h3 className="text-2xl font-semibold text-heading">Machine Learning Engineer </h3>
+                                    <h3 className="text-2xl font-semibold text-heading">AI/ML Engineer </h3>
                                     <p className="text-timeline-accent text-lg">Accessifiers Organization</p>
                                     <p className="text-timeline-accent text-lg">Duvall, WA</p>
                                     <p className="text-sub-content">Feb 2025 - Present</p>
@@ -401,9 +397,11 @@ function App() {
                                 <div className="hidden md:block w-4 h-4 bg-orange-500 rounded-full absolute left-1/2 transform -translate-x-1/2 z-10 shadow-[0_0_10px_2px_rgba(255,115,0,0.5)] border-2 border-white dark:border-black"></div>
                                 <div className="md:w-5/12 bg-card p-6 rounded-lg shadow-lg border border-card">
                                     <ul className="list-disc list-inside text-content">
-                                        <li>Led the development of a multilingual, neurodiversity-focused AI counseling platform addressing accessibility in conversational AI for global communities</li>
+                                        <li>Led end-to-end development of an AI-powered mental health assistant for neurodiverse and deaf users, enabling
+                                        context-aware, multilingual conversations across text, image, audio, and video inputs on platforms like Telegram
+                                        and WhatsApp using Retrieval-Augmented Generation and vector search in 30+ languages.</li>
                                         <li>Engineered a multilingual, accessibility-first ML model capable of interpreting ungrammatical input, regional languages, and SMS-style shorthand.</li>
-                                        <li>Integrated open-source LLMs (BERT, Mistral) with custom fine-tuning pipelines optimized for neurodiversenexpression patterns and inclusive language modeling.</li>
+                                        <li>Integrated open-source LLMs (OpenRouter) with custom fine-tuning pipelines optimized for neurodiverse expression patterns and inclusive language modeling.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -421,7 +419,7 @@ function App() {
                                         <li>Specialized in building scalable ML models, refining data infrastructure, and delivering robust, high-impact technical solutions across complex systems.</li>
                                         <li>Developed predictive matching models that improved cash application accuracy to 88%, resolving thousands of payment mismatches.</li>
                                         <li>Automated ERP reconciliations for SAP and Oracle, achieving 97% accuracy and reducing processing time by 50% in multi-currency environments.</li>
-                                        <li>Led cross-functional teams in end-to-end SaaS implementations, integrating AI pipelines into enterprise ecosystems.</li>
+                                        <li>Led cross-functional teams in end-to-end SaaS implementations, integrating AI/ML pipelines into finance enterprise ecosystems.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -477,7 +475,7 @@ function App() {
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">LLMs</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Hugging Face Transformers</span>
-                                        <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Ollama</span>
+                                        <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">OpenRouter</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">RAG</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">NLP</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Qdrant</span>
@@ -500,7 +498,7 @@ function App() {
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">docQA - an Autonomous AI for your documents</h3>
                                     <p className="text-content mb-4">
-                                        An autonomous AI agent that can read, understand, and answer questions about your documents using RAG techniques.
+                                        An autonomous AI agent that can read, summarize, understand, and answer questions about your documents using RAG techniques.
                                     </p>
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Python</span>
@@ -510,7 +508,7 @@ function App() {
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Hugging Face Transformers</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Qdrant</span>
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">NLP</span>
-                                        <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">OpenAI</span>
+                                        <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">OpenRouter</span>
 
                                     </div>
                                     <div className="flex space-x-4">
@@ -529,7 +527,7 @@ function App() {
                             <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF7F50?text=AI+Chess" alt="AI Chess" className="w-full h-48 object-cover" />
                                 <div className="p-6">
-                                    <h3 className="text-2xl font-semibold text-heading mb-2">AI Chess</h3>
+                                    <h3 className="text-2xl font-semibold text-heading mb-2">AI Chessbot</h3>
                                     <p className="text-content mb-4">
                                     This is a full-featured chess game built with React and JavaScript, featuring an AI opponent that uses the minimax algorithm with alpha-beta pruning for optimal moves.
                                     </p>
@@ -585,7 +583,7 @@ function App() {
                             <div className="project-card bg-card rounded-lg shadow-lg overflow-x-hidden border border-card transition duration-300 hover:shadow-[0_0_25px_rgba(255,69,0,0.5)]">
                                 <img src="https://placehold.co/600x400/000000/FF7F50?text=Rhea" alt="Rhea" className="w-full h-48 object-cover" />
                                 <div className="p-6">
-                                    <h3 className="text-2xl font-semibold text-heading mb-2">Rhea</h3>
+                                    <h3 className="text-2xl font-semibold text-heading mb-2">Rhea - Debate Partner</h3>
                                     <p className="text-content mb-4">
                                     A transformer-based NLP system that generates logically structured, for-and-against arguments on complex real-world topics.
                                     </p>
@@ -644,7 +642,7 @@ function App() {
                                 <div className="p-6">
                                     <h3 className="text-2xl font-semibold text-heading mb-2">JetScope</h3>
                                     <p className="text-content mb-4">
-                                    This project is a personal Data Science exploration of U.S. domestic aviation patterns using real-world data from the Bureau of Transportation Statistics.
+                                    This project is a personal Data Science exploration of U.S. domestic aviation patterns using years of real-world data from the Bureau of Transportation Statistics.
                                     </p>
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         <span className="bg-gray-800 text-white text-xs font-medium px-2.5 py-0.5 rounded-full border border-skill">Python</span>
@@ -680,28 +678,28 @@ function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
                       {[
                         {
-                          title: "Curiosity-Driven",
-                          desc: "I question systems, challenge assumptions, and chase the “why” behind the data. Every model I build starts with a genuine desire to understand.",
+                          title: "Curiosity at the Core",
+                          desc: "Its simple. Ask 'why?' Look deeper, at insights that give a better understanding."
                         },
                         {
-                          title: "Human-Centered",
-                          desc: "AI should augment people, not replace them. I build solutions that are intuitive, ethical, and focused on real-world impact.",
+                          title: "Human First, Always",
+                          desc: "AI should empower people, not overshadow them. I design tools that are ethical, accessible, and centered around real human needs.",
                         },
                         {
-                          title: "Built to Scale",
-                          desc: "Whether it’s a model, pipeline, or product — I design systems that grow with data, adapt with use, and stay resilient under load.",
+                          title: "Scalable by Design",
+                          desc: "From day one, I build systems that scale. Robust pipelines, flexible models, and architectures ready to evolve with complexity and demand.",
                         },
                         {
-                          title: "Bias-Aware",
-                          desc: "I believe responsible AI means checking for bias, understanding fairness, and being transparent about model limitations.",
+                          title: "Responsibly Built",
+                          desc: "Bias isn’t just a technical issue, it’s a responsibility. I prioritize fairness, transparency, and integrity at every stage of the project lifecycle.",
                         },
                         {
-                          title: "End-to-End Thinking",
-                          desc: "From raw data to deployment — I approach every ML project holistically, ensuring quality at every stage of the pipeline.",
+                          title: "End-to-End Mindset",
+                          desc: "Whether it’s raw data wrangling or deployment in production, I think holistically. Connecting dots across the stack to deliver cohesive solutions.",
                         },
                         {
                           title: "Keep It Real",
-                          desc: "I believe in shipping practical, grounded solutions — not just chasing hype. AI is only as good as the value it delivers.",
+                          desc: "I focus on building what matters — real-world solutions that solve meaningful problems, not just tech demos chasing trends.",
                         },
                       ].map((value, index) => (
                         <div
