@@ -71,26 +71,18 @@ const Skills = () => {
 
   // Function to render skill logo or fallback
   const renderSkillLogo = (skill) => {
-    try {
-      return (
-        <img 
-          src={skill.logo} 
-          alt={`${skill.name} logo`}
-          className="w-12 h-12 object-contain"
-          onError={(e) => {
-            // Fallback to text if image fails to load
-            e.target.style.display = 'none';
-            e.target.nextSibling.style.display = 'flex';
-          }}
-        />
-      );
-    } catch (error) {
-      return (
-        <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center text-white font-bold text-sm">
-          {skill.name.charAt(0)}
-        </div>
-      );
-    }
+    return (
+      <img 
+        src={skill.logo} 
+        alt={`${skill.name} logo`}
+        className="w-12 h-12 object-contain"
+        onError={(e) => {
+          // Fallback to text if image fails to load
+          e.target.style.display = 'none';
+          e.target.nextSibling.style.display = 'flex';
+        }}
+      />
+    );
   };
 
   return (

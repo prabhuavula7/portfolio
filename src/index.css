@@ -15,9 +15,9 @@
   --text-primary: #1A202C; /* Darker for better contrast */
   --text-secondary: #2D3748; /* Darker secondary text */
   --border: #E2E8F0;
-  --glass-bg: rgba(255, 255, 255, 0.15);
-  --glass-border: rgba(255, 255, 255, 0.25);
-  --glass-shadow: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: rgba(0, 0, 0, 0.15);
   --glass-text: #1A202C; /* Dark text on light glass */
 }
 
@@ -34,9 +34,9 @@
   --text-primary: #FFFFFF; /* Pure white for maximum contrast */
   --text-secondary: #F7FAFC; /* Very light gray */
   --border: #2D3748;
-  --glass-bg: rgba(0, 0, 0, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-shadow: rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(0, 0, 0, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: rgba(0, 0, 0, 0.5);
   --glass-text: #FFFFFF; /* White text on dark glass */
 }
 
@@ -127,6 +127,8 @@ body,
 .dark .container-glow:hover {
   box-shadow: 0 20px 40px rgba(251, 146, 60, 0.25) !important;
 }
+
+
 
 .btn-secondary {
   background: transparent;
