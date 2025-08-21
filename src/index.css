@@ -2,11 +2,49 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html
-{
+:root {
+  /* Light theme colors */
+  --primary: #8B4513; /* Saddle Brown - mahogany */
+  --primary-light: #A0522D; /* Sienna */
+  --primary-dark: #654321; /* Dark Brown */
+  --accent: #CD5C5C; /* Indian Red */
+  --accent-light: #DC143C; /* Crimson */
+  --accent-dark: #B22222; /* Fire Brick */
+  --background: #FFFFFF;
+  --surface: #F8F9FA;
+  --text-primary: #1A202C; /* Darker for better contrast */
+  --text-secondary: #2D3748; /* Darker secondary text */
+  --border: #E2E8F0;
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+  --glass-text: #1A202C; /* Dark text on light glass */
+}
+
+.dark {
+  /* Dark theme colors */
+  --primary: #D2691E; /* Chocolate - lighter mahogany for dark theme */
+  --primary-light: #F4A460; /* Sandy Brown - lighter for dark theme */
+  --primary-dark: #8B4513; /* Saddle Brown */
+  --accent: #F08080; /* Light Coral - lighter for dark theme */
+  --accent-light: #FF6B6B; /* Light Red */
+  --accent-dark: #CD5C5C; /* Indian Red */
+  --background: #0A0A0A; /* Slightly lighter black */
+  --surface: #1A1A1A;
+  --text-primary: #FFFFFF; /* Pure white for maximum contrast */
+  --text-secondary: #F7FAFC; /* Very light gray */
+  --border: #2D3748;
+  --glass-bg: rgba(0, 0, 0, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: rgba(0, 0, 0, 0.4);
+  --glass-text: #FFFFFF; /* White text on dark glass */
+}
+
+html {
   scroll-behavior: smooth;
   height: auto;
 }
+
 body,
 #root {
   margin: 0;
@@ -15,9 +53,171 @@ body,
   min-height: 100vh;
   overflow-x: hidden;
   transition: background-color 0.3s, color 0.3s;
-
+  background-color: var(--background);
+  color: var(--text-primary);
 }
 
+/* Glass-like UI styles */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  color: var(--glass-text);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 16px 0 var(--glass-shadow);
+  border-radius: 16px;
+  color: var(--glass-text);
+}
+
+.glass-button {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 2px 8px 0 var(--glass-shadow);
+  transition: all 0.3s ease;
+  color: var(--glass-text);
+  font-weight: 500;
+}
+
+.glass-button:hover {
+  background: var(--primary);
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px 0 rgba(139, 69, 19, 0.3);
+}
+
+/* Custom button styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 69, 19, 0.4);
+}
+
+/* Container glow effects */
+.container-glow {
+  transition: all 0.3s ease;
+}
+
+.container-glow:hover {
+  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2) !important;
+}
+
+.dark .container-glow:hover {
+  box-shadow: 0 20px 40px rgba(251, 146, 60, 0.25) !important;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--primary);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  border: 2px solid var(--primary);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Section backgrounds */
+.bg-section-dark {
+  background: linear-gradient(135deg, var(--surface), var(--background));
+}
+
+.bg-section-light {
+  background: linear-gradient(135deg, var(--background), var(--surface));
+}
+
+/* Text colors */
+.text-heading {
+  color: var(--primary);
+}
+
+.text-content {
+  color: var(--text-secondary);
+}
+
+.text-timeline-accent {
+  color: var(--accent);
+}
+
+.text-sub-content {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+/* Card styles */
+.bg-card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.border-card {
+  border-color: var(--border);
+}
+
+/* Header styles */
+.bg-header {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.text-header-link {
+  color: var(--text-primary);
+}
+
+.text-header-link-hover {
+  color: var(--primary);
+}
+
+/* Input styles */
+.bg-input {
+  background: var(--surface);
+}
+
+.text-input {
+  color: var(--text-primary);
+}
+
+.border-input {
+  border-color: var(--border);
+}
+
+/* Skill tags */
+.border-skill {
+  border-color: var(--primary);
+}
+
+/* Three.js canvas */
 #threejs-canvas {
   position: absolute;
   top: 0;
@@ -25,6 +225,191 @@ body,
   z-index: 0;
   width: 100%;
   height: 100vh;
-  pointer-events: none; 
+  pointer-events: none;
+}
+
+/* Animation classes - faster animations */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards; /* Reduced from 0.8s to 0.4s */
+}
+
+.delay-2000 {
+  animation-delay: 1s; /* Reduced from 2s to 1s */
+}
+
+.delay-2500 {
+  animation-delay: 1.5s; /* Reduced from 2.5s to 1.5s */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Intro text animation - faster transitions */
+.intro-text span {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.2s ease-out; /* Even faster: reduced from 0.25s to 0.2s */
+}
+
+.intro-text.animate span {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Add stagger effect for faster text reveal */
+.intro-text.animate span:nth-child(1) { transition-delay: 0s; }
+.intro-text.animate span:nth-child(2) { transition-delay: 0.02s; }
+.intro-text.animate span:nth-child(3) { transition-delay: 0.04s; }
+.intro-text.animate span:nth-child(4) { transition-delay: 0.06s; }
+.intro-text.animate span:nth-child(5) { transition-delay: 0.08s; }
+.intro-text.animate span:nth-child(6) { transition-delay: 0.1s; }
+.intro-text.animate span:nth-child(7) { transition-delay: 0.12s; }
+.intro-text.animate span:nth-child(8) { transition-delay: 0.14s; }
+.intro-text.animate span:nth-child(9) { transition-delay: 0.16s; }
+.intro-text.animate span:nth-child(10) { transition-delay: 0.18s; }
+.intro-text.animate span:nth-child(11) { transition-delay: 0.2s; }
+.intro-text.animate span:nth-child(12) { transition-delay: 0.22s; }
+
+/* Project card hover effects */
+.project-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(139, 69, 19, 0.2);
+}
+
+/* Timeline styles */
+.timeline-line {
+  background: linear-gradient(to bottom, var(--primary), var(--accent));
+}
+
+.timeline-dot {
+  background: var(--primary);
+  border-color: var(--background);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .glass-card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* Ensure text readability across all themes */
+.glass-card h1,
+.glass-card h2,
+.glass-card h3,
+.glass-card h4,
+.glass-card h5,
+.glass-card h6 {
+  color: var(--glass-text) !important;
+}
+
+.glass-card p,
+.glass-card span,
+.glass-card li {
+  color: var(--glass-text) !important;
+}
+
+/* Force contrast for important text elements */
+.text-heading {
+  color: var(--primary) !important;
+  font-weight: 600;
+}
+
+.text-content {
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+}
+
+.text-timeline-accent {
+  color: var(--accent) !important;
+  font-weight: 500;
+}
+
+/* Ensure form elements are readable */
+input, textarea, select {
+  color: var(--text-primary) !important;
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.7;
+}
+
+/* Ensure skill tags are readable */
+.glass-button {
+  color: var(--glass-text) !important;
+  font-weight: 500;
+}
+
+/* Additional text contrast improvements */
+.glass-card * {
+  color: inherit;
+}
+
+/* Ensure proper contrast for all text in glass elements */
+.glass-card .text-heading,
+.glass-card .text-content,
+.glass-card .text-timeline-accent {
+  color: var(--glass-text) !important;
+}
+
+/* Mahogany color utilities */
+.from-mahogany-600 {
+  --tw-gradient-from: #8B4513;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(139, 69, 19, 0));
+}
+
+.to-mahogany-800 {
+  --tw-gradient-to: #654321;
+}
+
+.bg-mahogany-600 {
+  background-color: #8B4513;
+}
+
+.bg-mahogany-800 {
+  background-color: #654321;
+}
+
+/* Hero section text contrast */
+#home .intro-text,
+#home .intro-text span,
+#home p {
+  color: var(--text-primary) !important;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Dark theme hero text enhancement */
+.dark #home .intro-text,
+.dark #home .intro-text span,
+.dark #home p {
+  color: #FFFFFF !important;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Timeline elements */
+.timeline-line {
+  background: linear-gradient(to bottom, var(--primary), var(--accent)) !important;
+}
+
+.timeline-dot {
+  background: var(--primary) !important;
+  border-color: var(--background) !important;
 }
 
