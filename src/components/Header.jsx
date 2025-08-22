@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Menu } from 'lucide-react';
 
 const Header = ({ scrollToSection, theme, setTheme, isMobileMenuOpen, setIsMobileMenuOpen, ThemeToggleButton }) => {
   const navItems = [
@@ -16,8 +16,21 @@ const Header = ({ scrollToSection, theme, setTheme, isMobileMenuOpen, setIsMobil
     scrollToSection(id, setIsMobileMenuOpen);
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
-    <header className="glass fixed top-0 left-0 right-0 z-50 border-b border-white/10">
+    <header 
+      className="glass fixed top-0 left-0 right-0 z-50 border-b border-white/10"
+      style={{
+        backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.3)',
+        boxShadow: theme === 'dark' ? '0 8px 32px 0 rgba(0, 0, 0, 0.5)' : '0 8px 32px 0 rgba(0, 0, 0, 0.15)'
+      }}
+    >
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <a 
           href="#home" 
@@ -65,7 +78,19 @@ const Header = ({ scrollToSection, theme, setTheme, isMobileMenuOpen, setIsMobil
         </div>
         
         <div className="flex items-center space-x-4">
-          {/* Mobile menu button removed - not needed */}
+          {/* Mobile menu button */}
+          <button
+            onClick={toggleMobileMenu}
+            className="md:hidden text-header-link hover:text-header-link-hover p-2 rounded-lg transition-all duration-300"
+            aria-label="Toggle Mobile Menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          
+          {/* Theme toggle for mobile */}
+          <div className="md:hidden">
+            <ThemeToggleButton theme={theme} setTheme={setTheme} />
+          </div>
         </div>
       </nav>
     </header>

@@ -281,7 +281,7 @@ const Projects = () => {
             Featured Projects
           </h2>
           <p className="text-xl text-content max-w-3xl mx-auto">
-            A selection of my most impactful work showcasing AI/ML, web development, and data science
+            A selection of my most impactful work showcasing AI/ML Engineering, Full Stack Development, and Data Science
           </p>
         </div>
 
@@ -430,7 +430,7 @@ const Projects = () => {
               </h3>
               <p className="text-content leading-relaxed text-lg mb-6 max-w-2xl">
                 These are just a few highlights from my portfolio. I have many more projects 
-                covering AI/ML, web development, data science, and more. Check out my GitHub 
+                covering other fascinating fields. Check out my GitHub 
                 profile to explore all my work!
               </p>
               <a

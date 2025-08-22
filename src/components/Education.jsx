@@ -11,12 +11,12 @@ const Education = () => {
       duration: "2022 – 2024",
       location: "Chicago, USA",
       logo: "iit.png",
-      description: "Comprehensive computer science program covering Design and Analysis of Algorithms, Advanced Database Organization, Advanced Operating Systems, Computer Networks I & II, Software Project Management, Data Preparation and Analysis, Analytics for Decision Making, User Centred Design, Big Data Technologies, and Artificial Intelligence.",
+      description: "Coursework: Design and Analysis of Algorithms, Advanced Database Organization, Advanced Operating Systems, Computer Networks I & II, Software Project Management, Data Preparation and Analysis, Analytics for Decision Making, User Centred Design, Big Data Technologies, and Artificial Intelligence.",
       achievements: [
         "GPA: 3.5/4.0",
         "Advanced coursework in algorithms, database systems, and operating systems"
       ],
-      technologies: ["Algorithms", "Database Systems", "Operating Systems", "Computer Networks", "Software Project Management", "Data Analysis", "AI", "Big Data"]
+      technologies: ["Algorithms", "Database Systems", "Operating Systems", "Computer Networks", "Software Project Management", "Artificial Intelligence","Machine Learning", "Big Data"]
     },
     {
       id: 2,
@@ -29,9 +29,9 @@ const Education = () => {
       achievements: [
         "Graduated with a 8.5 CGPA",
         "Led Ennovab, an entrepreneurship club backed by UC Berkeley Alumni",
-        "Worked as a TA for Communicative English and Critical Thinking Courses"
+        "Teaching Assistant for Communicative English and Critical Thinking Courses"
       ],
-      technologies: ["Computer Science", "Programming", "Software Engineering", "Entrepreneurship", "Leadership", "Teaching"]
+      technologies: ["Computer Science", "Cybersecurity", "Software Engineering", "Entrepreneurship", "Leadership", "Teaching"]
     }
   ];
 

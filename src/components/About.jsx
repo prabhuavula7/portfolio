@@ -59,7 +59,7 @@ const About = () => {
               </div>
               <h3 className="text-base font-bold text-heading mb-2">My Journey</h3>
               <p className="text-content leading-relaxed text-xs">
-                My journey into tech began in high school with a basic webpage about aircraft types. That small project sparked a lifelong fascination with intelligent systems.
+                My journey into tech began in high school with a basic webpage about commercial aircraft types. That small project sparked a lifelong fascination with intelligent systems.
               </p>
             </div>
           </div>
@@ -92,7 +92,7 @@ const About = () => {
               </div>
               <h3 className="text-base font-bold text-heading mb-2">Interests & Connect</h3>
               <p className="text-content leading-relaxed text-xs">
-                Outside of work, I'm an aviation enthusiast, chess player, lover of history and economics, and avid explorer. Let's connect and build something meaningful together!
+                Outside of work, I'm an aviation enthusiast, chess player, lover of history, economics, sports and an avid explorer. Let's connect and build something meaningful together!
               </p>
             </div>
           </div>

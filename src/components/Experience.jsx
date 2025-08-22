@@ -9,11 +9,11 @@ const Experience = () => {
       duration: "Feb 2025 - Present",
       location: "Duvall, WA",
       achievements: [
-        "I Lead end-to-end development of an AI-powered mental health assistant for neurodiverse and deaf users, enabling context-aware, multilingual conversations across text, image, audio, and video inputs on platforms like Telegram and WhatsApp using Retrieval-Augmented Generation and vector search in 30+ languages.",
+        "Lead end-to-end development of an AI-powered mental health assistant for neurodiverse and deaf users, enabling context-aware, multilingual conversations across text, image, audio, and video inputs on platforms like Telegram and WhatsApp using Retrieval-Augmented Generation and vector search in 30+ languages.",
         "Engineered a multilingual, accessibility-first ML model capable of interpreting ungrammatical input, regional languages, and SMS-style shorthand.",
         "Integrated open-source LLMs (OpenRouter) with custom fine-tuning pipelines optimized for neurodiverse expression patterns and inclusive language modeling."
       ],
-      technologies: ["AI/ML", "NLP", "LLMs", "RAG", "Vector Search", "Accessibility", "Multilingual"],
+      technologies: ["Python", "NLP", "LLMs", "RAG", "Vector Search", "Twilio", "React", "Azure"],
       logo: "🧠",
       color: "from-blue-500 to-purple-600"
     },
@@ -29,7 +29,7 @@ const Experience = () => {
         "Automated ERP reconciliations for SAP and Oracle, achieving 97% accuracy and reducing processing time by 50% in multi-currency environments.",
         "Led cross-functional teams in end-to-end SaaS implementations, integrating AI/ML pipelines into finance enterprise ecosystems."
       ],
-      technologies: ["ML Models", "Data Infrastructure", "Predictive Analytics", "ERP", "SAP", "Oracle", "SaaS"],
+      technologies: ["Python", "SQL", "Predictive Analytics", "ERP", "Consulting", "Software Project Management", "Computer Vision"],
       logo: "🏢",
       color: "from-green-500 to-teal-600"
     }

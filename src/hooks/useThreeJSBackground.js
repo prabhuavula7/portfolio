@@ -119,7 +119,7 @@ export const useThreeJSBackground = () => {
     
     const onDocumentTouchMove = (event) => {
       if (event.touches.length === 1) {
-        event.preventDefault();
+        // Remove preventDefault to allow normal scrolling
         mouseX = (event.touches[0].pageX - windowHalfX);
         mouseY = (event.touches[0].pageY - windowHalfY);
       }
@@ -136,7 +136,7 @@ export const useThreeJSBackground = () => {
 
     // Add click interaction
     const onDocumentClick = (event) => {
-      event.preventDefault();
+      // Remove preventDefault to allow normal page interactions
       
       // Calculate mouse position in normalized device coordinates
       const mouse = new THREE.Vector2();

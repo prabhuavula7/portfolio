@@ -43,6 +43,8 @@
 html {
   scroll-behavior: smooth;
   height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 body,
@@ -51,7 +53,9 @@ body,
   padding: 0;
   width: 100%;
   min-height: 100vh;
+  height: auto;
   overflow-x: hidden;
+  overflow-y: auto;
   transition: background-color 0.3s, color 0.3s;
   background-color: var(--background);
   color: var(--text-primary);
@@ -413,5 +417,27 @@ input::placeholder, textarea::placeholder {
 .timeline-dot {
   background: var(--primary) !important;
   border-color: var(--background) !important;
+}
+
+/* Ensure proper scrolling behavior */
+html, body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  position: relative !important;
+}
+
+/* Mobile menu overlay - ensure it doesn't block scrolling */
+.mobile-menu-overlay {
+  pointer-events: none;
+}
+
+.mobile-menu-overlay .mobile-menu-content {
+  pointer-events: auto;
+}
+
+/* Force scroll behavior */
+* {
+  scroll-behavior: smooth;
 }
 
