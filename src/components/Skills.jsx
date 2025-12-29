@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 const Skills = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [filterText, setFilterText] = useState('');
+  const [showAll, setShowAll] = useState(false);
 
   const skillCategories = [
     {
@@ -56,7 +58,10 @@ const Skills = () => {
         { name: 'AWS', logo: '/logos/aws.svg' },
         { name: 'Azure', logo: '/logos/azure.svg' },
         { name: 'GCP', logo: '/logos/gcp.svg' },
-        { name: 'GitHub', logo: '/logos/github.svg' }
+        { name: 'GitHub', logo: '/logos/github.svg' },
+        { name: 'Auth0', logo: '/logos/auth0.png' },
+        { name: 'Datadog', logo: '/logos/datadog.png' },
+        { name: 'Stripe', logo: '/logos/stripe.png' }
       ]
     }
   ];
@@ -65,23 +70,69 @@ const Skills = () => {
     category.skills.map(skill => ({ ...skill, category: category.id }))
   );
 
-  const filteredSkills = activeCategory === 'all' 
-    ? allSkills 
+  const baseFiltered = activeCategory === 'all'
+    ? allSkills
     : skillCategories.find(cat => cat.id === activeCategory)?.skills || [];
+
+  const filteredSkills = baseFiltered.filter(s =>
+    s.name.toLowerCase().includes(filterText.trim().toLowerCase())
+  );
+
+  // Prioritize common techs for the overview
+  const prioritize = (list) => {
+    const priority = [
+      'React','JavaScript','TypeScript','Python','Node.js','Next.js','AWS','Azure','GCP',
+      'Docker','Kubernetes','Stripe','Auth0','Datadog','MongoDB','Postman','GitHub',
+      'TensorFlow','PyTorch','Scikit-learn','Pandas','NumPy','Jupyter'
+    ];
+
+    const idx = (name) => {
+      const i = priority.findIndex(p => p.toLowerCase() === name.toLowerCase());
+      return i === -1 ? priority.length : i;
+    };
+
+    return [...list].sort((a, b) => {
+      const ia = idx(a.name);
+      const ib = idx(b.name);
+      if (ia !== ib) return ia - ib;
+      return a.name.localeCompare(b.name);
+    });
+  };
+
+  // Use prioritized order for the overview (All tab) when no filter is active
+  const displaySkills = (activeCategory === 'all' && filterText.trim() === '')
+    ? prioritize(filteredSkills)
+    : filteredSkills;
 
   // Function to render skill logo or fallback
   const renderSkillLogo = (skill) => {
     return (
-      <img 
-        src={skill.logo} 
-        alt={`${skill.name} logo`}
-        className="w-12 h-12 object-contain"
-        onError={(e) => {
-          // Fallback to text if image fails to load
-          e.target.style.display = 'none';
-          e.target.nextSibling.style.display = 'flex';
-        }}
-      />
+      <div
+        className="w-12 h-12 rounded-xl flex items-center justify-center p-1 bg-white/0 dark:bg-white/5"
+        title={skill.name}
+        aria-label={skill.name}
+      >
+        <img
+          src={skill.logo}
+          alt={`${skill.name} logo`}
+          className="max-w-full max-h-full object-contain"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            const parent = e.target.parentNode;
+            if (parent) {
+              let fallback = parent.querySelector('.skill-fallback');
+              if (!fallback) {
+                fallback = document.createElement('div');
+                fallback.className = 'skill-fallback w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm';
+                fallback.textContent = skill.name.charAt(0);
+                parent.appendChild(fallback);
+              } else {
+                fallback.style.display = 'flex';
+              }
+            }
+          }}
+        />
+      </div>
     );
   };
 
@@ -98,25 +149,25 @@ const Skills = () => {
         </div>
 
         {/* Main Tech Stack Panel */}
-        <div className="glass-card p-8 rounded-3xl max-w-6xl mx-auto container-glow">
+        <div className="glass-card p-8 rounded-3xl max-w-6xl mx-auto">
           
           {/* Panel Header with Category Tabs */}
           <div className="border-b border-gray-200 dark:border-gray-600 bg-gradient-to-r from-primary/5 to-accent/5">
             <div className="flex flex-wrap justify-center gap-2 p-6">
               <button
-                onClick={() => setActiveCategory('all')}
+                onClick={() => { setActiveCategory('all'); setShowAll(false); setFilterText(''); }}
                 className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 ${
                   activeCategory === 'all'
                     ? 'glass-button bg-gradient-to-r from-primary to-accent text-white shadow-lg'
                     : 'glass-button hover:bg-gradient-to-r hover:from-primary/20 hover:to-accent/20'
                 }`}
               >
-                All Tech Stack
+                Overview
               </button>
               {skillCategories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => setActiveCategory(category.id)}
+                  onClick={() => { setActiveCategory(category.id); setShowAll(false); setFilterText(''); }}
                   className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 ${
                     activeCategory === category.id
                       ? 'glass-button bg-gradient-to-r from-primary to-accent text-white shadow-lg'
@@ -129,30 +180,59 @@ const Skills = () => {
             </div>
           </div>
 
+          {/* Search / filter input */}
+          <div className="p-6 flex items-center justify-center gap-4">
+            <input
+              type="search"
+              value={filterText}
+              onChange={(e) => { setFilterText(e.target.value); setShowAll(false); }}
+              placeholder="Search technologies (e.g. React, Stripe, Auth0)"
+              className="w-full max-w-xl px-4 py-2 rounded-xl border border-input bg-input text-input focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+              aria-label="Filter technologies"
+            />
+          </div>
+          
           {/* Panel Content - Skills Grid */}
           <div className="p-8">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-              {filteredSkills.map((skill, index) => (
-                <div
-                  key={`${skill.category}-${skill.name}`}
-                  className="skill-card p-6 rounded-2xl text-center transition-all duration-300 hover:scale-105 hover:shadow-lg bg-white dark:bg-slate-600/30 dark:backdrop-blur-xl backdrop-saturate-150 border border-gray-200 dark:border-slate-500/40 dark:shadow-slate-600/20 container-glow"
-                >
-                  {/* Skill Logo */}
-                  <div className="mb-4 flex justify-center">
-                    {renderSkillLogo(skill)}
-                    {/* Fallback text if logo fails */}
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center text-white font-bold text-sm hidden">
-                      {skill.name.charAt(0)}
-                    </div>
-                  </div>
+              {(() => {
+                const limit = 12;
+                const listToShow = (!showAll && displaySkills.length > limit) ? displaySkills.slice(0, limit) : displaySkills;
 
-                  {/* Skill Name */}
-                  <h3 className="text-sm font-semibold text-heading">
-                    {skill.name}
-                  </h3>
-                </div>
-              ))}
+                return listToShow.map((skill, index) => (
+                  <div
+                    key={`${skill.category}-${skill.name}`}
+                    className="skill-card p-6 rounded-2xl text-center transition-all duration-300 hover:scale-105 bg-white dark:bg-slate-600/30 dark:backdrop-blur-xl backdrop-saturate-150 border border-gray-200 dark:border-slate-500/40"
+                    title={skill.name}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={skill.name}
+                  >
+                    {/* Skill Logo */}
+                    <div className="mb-4 flex justify-center">
+                      {renderSkillLogo(skill)}
+                    </div>
+
+                    {/* Skill Name */}
+                    <h3 className="text-sm font-semibold text-heading">
+                      {skill.name}
+                    </h3>
+                  </div>
+                ));
+              })()}
             </div>
+
+            {/* Show More / Show Less for long lists (mobile friendly) */}
+            {filteredSkills.length > 12 && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => setShowAll(prev => !prev)}
+                  className="glass-button px-6 py-2 rounded-2xl"
+                >
+                  {showAll ? 'Show less' : `Show all (${filteredSkills.length})`}
+                </button>
+              </div>
+            )}
 
             {/* Skills Summary */}
             <div className="mt-12 text-center">

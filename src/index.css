@@ -441,3 +441,26 @@ html, body {
   scroll-behavior: smooth;
 }
 
+/* Technology pill hover/focus styling */
+.tech-pill {
+  transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+/* Light theme: on hover or focus, pill becomes primary (brown) with white text */
+:root .tech-pill:hover,
+:root .tech-pill:focus {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 10px 25px rgba(139, 69, 19, 0.16);
+}
+
+/* Dark theme: similar visual but using slightly lighter primary if desired */
+.dark .tech-pill:hover,
+.dark .tech-pill:focus {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+}
+

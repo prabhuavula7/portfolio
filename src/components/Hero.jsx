@@ -20,13 +20,13 @@ const Hero = ({ threeJsCanvasRef, scrollToSection }) => {
           }}
         >
           <span>Hey,</span> <span>I'm</span> <span>Prabhu</span> <span>Kiran</span> <span>Avula,</span> <br className="hidden md:block" />
-          <span>an</span> <span>AI/ML Engineer and Data Scientist!</span>
+          <span>an</span> <span>Full Stack Developer and AI/ML Enthusiast</span>
         </h1>
         
         <p className="text-lg md:text-xl max-w-3xl mx-auto mb-10 opacity-0 animate-fade-in delay-2000 font-medium drop-shadow-lg"
            style={{ color: 'var(--text-primary)' }}>
           I build intelligent systems that learn, adapt, and deliver value. <br className="hidden md:block" /> 
-          From models to meaning — I turn complexity into clarity.
+          From models to products — I turn complexity into clarity.
         </p>
         
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 opacity-0 animate-fade-in delay-2500">

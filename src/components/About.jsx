@@ -29,7 +29,7 @@ const About = () => {
               <h3 className="text-lg font-bold text-heading mb-2">I'm Prabhu Kiran Avula</h3>
               <p className="text-base font-semibold text-accent mb-2">or APK for short</p>
               <p className="text-content leading-relaxed text-sm">
-                AI/ML Engineer and Data Scientist passionate about building intelligent, scalable systems.
+                Full Stack Developer - AI/ML and Data Scientist passionate about building intelligent, scalable systems.
               </p>
             </div>
           </div>
