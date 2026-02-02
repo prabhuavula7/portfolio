@@ -10,3 +10,4 @@ export { default as Contact } from './Contact';
 export { default as Footer } from './Footer';
 export { default as ScrollToTop } from './ScrollToTop';
 export { default as ThemeToggleButton } from './ThemeToggleButton';
+export { default as BlogPreview } from './BlogPreview';

@@ -1,0 +1,216 @@
+---
+title: "Tool Boundaries for Agentic Systems"
+date: "2026-02-02"
+readTime: "8 min read"
+author: "Prabhu Kiran Avula"
+excerpt: "In production, agent power is mostly tool power. This guide shows how to design capability boundaries, approval gates, and audit trails so you can safely scale what agents can do, anchored in NIST AI RMF governance and monitoring principles."
+cover: "/blog/toolboundaries.png"
+tags: ["AI/ML", "Agentic AI", "Security", "Governance", "Architecture", "NIST", "Miscellaneous"]
+---
+
+import CodeTabs from "../../src/components/CodeTabs";
+
+## Why tool boundaries decide autonomy
+
+If you strip away the hype, most agent capability comes from one thing: what tools the agent can invoke. A model that can only read context is a helper. A model that can trigger refunds, change account settings, or rotate credentials is an operator.
+
+That means the safest path to scale agentic systems is not better prompts. It is deliberate tool boundaries: permissions, scopes, approval gates, and monitoring that are designed before you expand capability.
+
+NIST's AI Risk Management Framework (AI RMF) is useful here because it pushes teams to treat AI as a socio-technical system. In practice, that means governance (who is accountable, what policies exist, what is monitored) is as important as model performance.
+
+This article is a practical guide to designing tool boundaries for agentic systems so you can ship useful autonomy without creating a new class of security incidents.
+
+## Capability matrix: read, write, irreversible
+
+Avoid complicated role systems early. Start with three capability classes and make them explicit.
+
+- **Read**
+  - Examples: Search knowledge base, fetch invoices, read project status, summarize tickets.
+  - Primary risk: Data exposure and cross-tenant leakage.
+  - Default controls: Tenant-scoped queries, field-level filtering, output redaction, rate limits.
+
+- **Write (reversible)**
+  - Examples: Draft an email, create a task, add a comment, set a non-sensitive preference.
+  - Primary risk: Unwanted changes, spam, workflow disruption.
+  - Default controls: Idempotency keys, dry run preview, rollback path, bounded write scopes.
+
+- **Irreversible (or costly)**
+  - Examples: Issue a refund, change account owner, delete data, rotate secrets, wire money, cancel subscriptions.
+  - Primary risk: Financial loss, lockouts, data destruction, compliance violations.
+  - Default controls: Approval gates, step-up auth, dual control, hold periods, strict allowlists.
+
+Treat this matrix as a contract. Your system should know which category each tool belongs to and enforce controls based on the category.
+
+## Governance principles that map to tool design
+
+NIST AI RMF emphasizes governance structures and continuous monitoring as part of responsible AI risk management. For tool-using agents, that translates to a few concrete principles:
+
+- **Assign ownership for tools, not just models**
+  - Every tool has an owner, a threat model, and an incident playbook.
+
+- **Prefer least privilege by default**
+  - Tools should do one bounded job. Search everything and update anything are anti-patterns.
+
+- **Monitor usage like a production system**
+  - The moment tools cause side effects, you need observability, drift detection, and anomaly alerts.
+
+- **Document and enforce intended use**
+  - If a tool is read-only, enforce it in code, not in prompt text.
+
+## Approval gates: where you must slow down
+
+An approval gate is a deliberate friction point where the system demands explicit human intent before a high-impact action happens.
+
+### Actions that should require approval by default
+
+- **Money movement**
+  - Refunds, credits, invoices, payouts, subscription cancellations with financial consequences.
+
+- **Account control changes**
+  - Owner or admin changes, SSO settings, password resets, MFA disablement, domain verification.
+
+- **Secrets and privileged credentials**
+  - API keys, OAuth tokens, webhook signing keys, encryption key operations.
+
+- **Irreversible data operations**
+  - Deletion, retention policy changes, export of large data sets, bulk operations.
+
+### Gate patterns that work in SaaS
+
+- **Two-step commit**
+  1) Agent prepares a proposed action as a structured plan.
+  2) Human approves, then the system executes.
+
+- **Step-up authentication**
+  - Require re-auth (or stronger auth) for sensitive changes even if the user is already logged in.
+
+- **Dual control**
+  - For enterprise actions (secrets rotation, account ownership), require a second human approver.
+
+- **Hold periods**
+  - For destructive or financially material actions, allow a short delay window for cancellation.
+
+A practical implementation is to split tools into prepare and execute versions. The agent can call prepare freely, but execute requires approval.
+
+<CodeTabs
+  tabs={[
+    {
+      label: "JS/TS",
+      language: "javascript",
+      code: `// Prepare: safe to run without side effects
+Tool.prepare_refund({ invoiceId, amount });
+
+// Execute: must include an approval token bound to user + tenant + nonce
+Tool.execute_refund({ nonce, approvalToken });`
+    },
+    {
+      label: "Python",
+      language: "python",
+      code: `# Prepare: safe to run without side effects
+Tool.prepare_refund({"invoiceId": invoice_id, "amount": amount})
+
+# Execute: must include an approval token bound to user + tenant + nonce
+Tool.execute_refund({"nonce": nonce, "approvalToken": approval_token})`
+    }
+  ]}
+/>
+
+This structure keeps your agent useful (it can assemble a refund proposal) without granting unchecked authority.
+
+## Scopes and permissions: design tool contracts like APIs
+
+Tool boundaries should look like good API design.
+
+### Scope design rules
+
+- **Scope to tenant and user context**
+  - Never accept tenant identifiers from model text. Derive them from authenticated context.
+
+- **Scope to purpose**
+  - Prefer purpose-specific scopes like `billing:refund:prepare` over broad scopes like `billing:write`.
+
+- **Constrain selectors**
+  - Tools that accept free-form queries are hard to secure. Prefer structured filters with allowlisted fields.
+
+- **Constrain output**
+  - Tools should only return the fields needed for the task. Over-returning creates redaction debt.
+
+### Tool schema as policy
+
+Define tool inputs and outputs with explicit schemas and reject unknown fields. This prevents prompt injection from smuggling extra parameters.
+
+- Input schemas reduce surprise behaviors.
+- Output schemas simplify redaction and logging.
+- Versioning schemas lets you roll out tighter controls without breaking clients.
+
+## Logging strategy: prompts, tool calls, outputs (with redaction)
+
+If you plan to scale agent capability, build logging before you scale.
+
+A good logging strategy has three goals:
+
+1. Reproduce incidents.
+2. Prove what happened.
+3. Avoid turning logs into a new data breach.
+
+### What to log
+
+- **Prompt lineage**
+  - System prompt version, policy bundle version, tool inventory version.
+  - Conversation or run identifiers that allow reconstruction.
+
+- **Tool calls**
+  - Tool name, timestamp, tenant_id, user_id, tool args (redacted), request ID, latency.
+  - Approval events (who approved, when, for what).
+
+- **Tool outputs**
+  - Output metadata by default.
+  - Full output only when necessary, and still redacted.
+
+- **Agent decisions**
+  - The selected plan and rationale at a summary level (avoid logging raw chain-of-thought).
+  - Keep it minimal and policy-safe.
+
+### Redaction rules that hold up
+
+- **Redact at the boundary**
+  - Redact sensitive fields before they enter the log pipeline, not after.
+
+- **Classify data types**
+  - PII, secrets, financial identifiers, credentials, internal tokens.
+
+- **Hash and tokenize**
+  - Store stable hashes for correlation without storing the raw value.
+
+- **Use tiered retention**
+  - Short retention for high-sensitivity traces, longer retention for metadata and aggregates.
+
+### Monitoring and alerting
+
+Treat tool usage as an operational signal:
+
+- Spikes in irreversible tool calls.
+- Unusual patterns (many prepare_refund calls without approvals).
+- Cross-tenant query attempts.
+- Repeated denials (may indicate probing).
+- Large exports or repeated access to sensitive resources.
+
+This is where AI RMF aligned monitoring becomes concrete. Your governance is only real if it is measurable and actively managed.
+
+> The model should never be in a position to choose which tenant a tool runs against.
+
+## Final takeaway
+
+Agentic systems become risky when tools become powerful. The safest way to scale autonomy is to scale tool capability intentionally: classify tools by impact, enforce scopes and schemas, require approvals for high-risk actions, and build audit trails and monitoring before you expand what agents can do.
+
+If you get tool boundaries right, models can improve over time without turning your product into an unpredictable operator. If you get tool boundaries wrong, every model upgrade is a new incident waiting to happen.
+
+## Sources
+
+<ul className="sources-list">
+  <li>NIST AI Risk Management Framework (AI RMF 1.0) (PDF). <a href="https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf">https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf</a></li>
+  <li>NIST AI RMF overview page. <a href="https://www.nist.gov/itl/ai-risk-management-framework">https://www.nist.gov/itl/ai-risk-management-framework</a></li>
+  <li>NIST AI RMF Playbook (NIST AI Resource Center). <a href="https://airc.nist.gov/airmf-resources/playbook/">https://airc.nist.gov/airmf-resources/playbook/</a></li>
+  <li>NIST AI RMF Playbook (NIST site). <a href="https://www.nist.gov/itl/ai-risk-management-framework/nist-ai-rmf-playbook">https://www.nist.gov/itl/ai-risk-management-framework/nist-ai-rmf-playbook</a></li>
+  <li>NIST AI RMF Core description (AIRC). <a href="https://airc.nist.gov/airmf-resources/airmf/5-sec-core/">https://airc.nist.gov/airmf-resources/airmf/5-sec-core/</a></li>
+</ul>

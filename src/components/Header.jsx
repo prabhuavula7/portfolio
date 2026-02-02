@@ -1,18 +1,31 @@
 import React from 'react';
-import { Sun, Moon, Menu } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 
 const Header = ({ scrollToSection, theme, setTheme, isMobileMenuOpen, setIsMobileMenuOpen, ThemeToggleButton }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const navItems = [
     { id: 'about', label: 'About' },
-    { id: 'skills', label: 'Skills' },
     { id: 'experience', label: 'Experience' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'blog', label: 'Blog' },
     { id: 'education', label: 'Education' },
     { id: 'projects', label: 'Projects' },
     { id: 'values', label: 'Values' },
     { id: 'contact', label: 'Contact' }
   ];
 
-  const handleNavClick = (id) => {
+  const handleNavClick = (event, id) => {
+    event.preventDefault();
+    if (id === 'blog') {
+      navigate('/blog');
+      return;
+    }
+    if (location.pathname !== '/') {
+      navigate(`/#${id}`);
+      return;
+    }
     scrollToSection(id, setIsMobileMenuOpen);
   };
 
@@ -33,8 +46,8 @@ const Header = ({ scrollToSection, theme, setTheme, isMobileMenuOpen, setIsMobil
     >
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <a 
-          href="#home" 
-          onClick={() => handleNavClick('home')} 
+          href="/#home" 
+          onClick={(event) => handleNavClick(event, 'home')} 
           className="text-2xl font-bold text-header-link rounded-lg p-3 transition-all duration-300"
           onMouseEnter={(e) => {
             e.target.style.setProperty('background-color', 'rgba(255, 255, 255, 0.15)', 'important');
@@ -54,8 +67,8 @@ const Header = ({ scrollToSection, theme, setTheme, isMobileMenuOpen, setIsMobil
           {navItems.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
-              onClick={() => handleNavClick(item.id)}
+              href={item.id === 'blog' ? '/blog' : `/#${item.id}`}
+              onClick={(event) => handleNavClick(event, item.id)}
               className="text-header-link font-medium transition-all duration-300 px-3 py-2 rounded-lg"
               onMouseEnter={(e) => {
                 e.target.style.setProperty('background-color', 'rgba(255, 255, 255, 0.15)', 'important');
@@ -71,7 +84,7 @@ const Header = ({ scrollToSection, theme, setTheme, isMobileMenuOpen, setIsMobil
               {item.label}
             </a>
           ))}
-          
+
           <div className="ml-4 flex items-center">
             <ThemeToggleButton theme={theme} setTheme={setTheme} />
           </div>

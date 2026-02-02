@@ -52,6 +52,7 @@ const Skills = () => {
       name: 'Tools & Platforms',
       skills: [
         { name: 'VS Code', logo: '/logos/vscode.svg' },
+        { name: 'n8n', logo: '/logos/n8n.svg' },
         { name: 'Tableau', logo: '/logos/tableau.svg' },
         { name: 'Postman', logo: '/logos/postman.svg' },
         { name: 'Docker', logo: '/logos/docker.svg' },

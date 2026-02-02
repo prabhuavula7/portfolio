@@ -1,0 +1,301 @@
+---
+title: "Shipping AI Features in 30 Days"
+date: "2026-02-02"
+readTime: "10 min read"
+author: "Prabhu Kiran Avula"
+excerpt: "A practical 30-day plan for shipping an AI feature that users trust: start with one job, build evaluation and monitoring early, roll out safely, and iterate using real feedback instead of vibes."
+cover: "/blog/shipai30days.png"
+tags: ["AI/ML", "Product", "Software Engineering", "MLOps", "SaaS"]
+---
+
+import CodeTabs from "../../src/components/CodeTabs";
+
+## Why 30 days is realistic
+
+Shipping an AI feature is not the same as shipping a UI. The happy path is easy to demo, but the long tail of edge cases, ambiguity, and missing context is what users actually live in.
+
+Teams that ship quickly do three things well: they narrow scope, they bake evaluation into the workflow, and they treat deployment as an experiment with guardrails. That mindset aligns with risk management guidance like NIST AI RMF and the Generative AI Profile: define intended use, monitor behavior post-deployment, and close the loop with feedback.
+
+This is a concrete 30-day plan you can run with a full-stack team.
+
+## Day 0: choose a single job, not a chatbot
+
+Avoid "AI assistant" as a scope. Pick one job that can be measured.
+
+Good first jobs:
+- Summarize internal objects (tickets, briefs, invoices) with citations.
+- Draft internal content (status updates, follow-ups) with user review.
+- Answer questions from a bounded knowledge base with retrieval grounding.
+
+Bad first jobs:
+- "Ask anything about the company."
+- Actions that move money, change accounts, or touch secrets.
+- Multi-tool autonomous flows without auditability.
+
+Define success with one sentence:
+- "Reduce time-to-answer for X from 10 minutes to 2 minutes."
+- "Increase task completion rate for Y by 15%."
+- "Cut support handle time for Z by 20%."
+
+> Shipping fast is mostly about choosing a problem small enough to measure and big enough to matter.
+
+## Week 1 (Days 1–7): build the thin end-to-end slice
+
+Your goal is one safe workflow that works by day 7.
+
+Deliverables:
+- A minimal UI entry point (button, command palette, or panel).
+- One server endpoint that orchestrates the call.
+- A baseline prompt template with strict formatting.
+- A small golden set of test cases (20–50 examples).
+- Basic telemetry: request ID, latency, errors, and model version.
+
+Start with a read-only posture:
+- Retrieval + summarization + citations.
+- No writes to user data.
+- No background actions.
+
+Keep the architecture boring:
+- UI → API → AI service → model + retrieval.
+- All calls behind your normal auth.
+- Tenant context derived from auth, not from prompt text.
+
+A simple spec file helps alignment and prevents scope creep:
+
+```yaml
+feature: "Invoice Q&A"
+job: "Answer questions about a single invoice, with citations."
+inputs:
+  - invoice_id (required)
+  - user_question (required)
+outputs:
+  - answer (markdown, max 10 sentences)
+  - citations (array of doc spans)
+non_goals:
+  - cross-invoice comparisons
+  - refunds, edits, deletes
+safety:
+  - tenant-scoped retrieval only
+  - refuse if missing context
+success_metric:
+  - >=80% acceptance on golden set
+```
+
+## Week 2 (Days 8–14): evaluation that blocks regressions
+
+Most teams add evals later and then cannot tell if changes help or hurt. Build a lightweight harness that runs on every PR and nightly.
+
+Create a rubric for your job:
+- Correctness (does it answer the question).
+- Grounding (are claims supported by retrieved context).
+- Completeness (does it cover the key points).
+- Safety (no secrets, no cross-tenant leakage).
+- Tone (optional, but keep it bounded).
+
+Build two eval tracks:
+- Offline evals on the golden set.
+- Online signals from real usage (thumbs up/down, edits, copy, time-to-complete).
+
+If you can only afford one thing: measure grounding failures and refusal quality. Hallucinations are expensive, but unhelpful refusals are also expensive.
+
+## Week 3 (Days 15–21): reliability, UX edges, and when it's wrong
+
+By week 3, the core flow works. Now you make it usable.
+
+Add product behaviors that reduce overtrust:
+- Show sources and allow users to expand them.
+- Show "I don't know" and "need more info" as first-class outcomes.
+- Avoid confident language unless the system can cite evidence.
+
+Engineering hardening:
+- Timeouts and retries with backoff.
+- Caching for retrieval results.
+- Model fallbacks (only if the output format is stable).
+- Strict output validation (schema + max length).
+
+Safety hardening:
+- Do not log raw secrets.
+- Redact PII from traces.
+- Enforce tenant-scoped retrieval and filters at the server boundary.
+- Block tool calls that accept free-form selectors without allowlists.
+
+## Week 4 (Days 22–30): controlled rollout and monitoring
+
+This is where teams either ship safely or ship a support nightmare.
+
+Rollout strategy:
+- Start with internal users.
+- Then a small beta cohort (by tenant, by role).
+- Ship behind a feature flag.
+- Add shadow mode if possible (run the AI in parallel, compare outputs, do not show users yet).
+- Have a rollback plan that is one click.
+
+Monitoring strategy (minimum viable):
+- Latency p50/p95, error rate.
+- Refusal rate (too high usually means poor retrieval or overly strict policies).
+- Grounding failure rate (claims without citations).
+- User feedback rate (thumbs down, report issue).
+- Cost per successful task.
+
+## The 30-day capability ladder
+
+A clean way to avoid accidental escalation is to stage capability:
+- Stage 1: Read
+  - Summarize, search, answer with citations.
+  - Safe to ship broadly.
+- Stage 2: Write (reversible)
+  - Drafts, suggestions, proposed changes.
+  - User must review and click apply.
+  - Safe for beta.
+- Stage 3: Irreversible
+  - Money movement, account ownership changes, secrets rotation.
+  - Requires approval gates, step-up auth, and audit trails.
+  - Not a 30-day goal unless your org already has mature controls.
+
+Approval gates should exist before you allow irreversible actions. If money, account changes, or secrets are involved, do not just add a tool. Add process.
+
+## What feature quality actually means in AI
+
+A 30-day ship does not mean skipping rigor. It means focusing rigor on the failures that matter.
+
+High-value eval categories:
+- Grounding and hallucinations
+  - Are claims tied to retrieved evidence?
+- Instruction following
+  - Does the output adhere to format and constraints?
+- Data isolation
+  - Can it leak cross-tenant information?
+- Helpfulness
+  - Does it get the job done quickly, even when incomplete?
+
+Some teams use auto-raters to scale evaluation. If you do, keep a human-verified subset and treat rater drift as a monitored system.
+
+## Implementation pattern: one orchestration function, two languages
+
+Below is a minimal pattern: build a bounded context, run retrieval, call the model, validate output, and emit structured logs.
+
+<CodeTabs
+  tabs={[
+    {
+      label: "JavaScript",
+      language: "javascript",
+      code: `export async function answerInvoiceQuestion(req) {
+  // 1) Tenant-scoped retrieval (server-enforced)
+  const chunks = await retrieveInvoiceChunks({
+    tenantId: req.tenantId,
+    invoiceId: req.invoiceId,
+    query: req.question,
+    k: 8
+  });
+
+  // 2) Build bounded prompt (no free-form tool routing)
+  const prompt = buildPrompt({
+    question: req.question,
+    contextChunks: chunks,
+    constraints: { maxSentences: 10, requireCitations: true }
+  });
+
+  // 3) Call model
+  const raw = await callModel({ prompt, temperature: 0.2 });
+
+  // 4) Validate and normalize output
+  const parsed = validateAnswer(raw); // schema + length + citation structure
+
+  // 5) Emit structured telemetry (redacted)
+  logEvent("ai.invoice_answer", {
+    tenantId: req.tenantId,
+    userId: req.userId,
+    invoiceId: req.invoiceId,
+    chunkCount: chunks.length,
+    refused: Boolean(parsed.refused)
+  });
+
+  return parsed;
+}`
+    },
+    {
+      label: "Python",
+      language: "python",
+      code: `from dataclasses import dataclass
+from typing import Dict, Any
+
+@dataclass
+class Req:
+    tenant_id: str
+    user_id: str
+    invoice_id: str
+    question: str
+
+def answer_invoice_question(req: Req) -> Dict[str, Any]:
+    chunks = retrieve_invoice_chunks(
+        tenant_id=req.tenant_id,
+        invoice_id=req.invoice_id,
+        query=req.question,
+        k=8,
+    )
+
+    prompt = build_prompt(
+        question=req.question,
+        context_chunks=chunks,
+        constraints={"max_sentences": 10, "require_citations": True},
+    )
+
+    raw = call_model(prompt=prompt, temperature=0.2)
+    parsed = validate_answer(raw)  # schema + length + citation structure
+
+    log_event("ai.invoice_answer", {
+        "tenant_id": req.tenant_id,
+        "user_id": req.user_id,
+        "invoice_id": req.invoice_id,
+        "chunk_count": len(chunks),
+        "refused": bool(parsed.get("refused"))
+    })
+
+    return parsed`
+    }
+  ]}
+/>
+
+## Evals you can run in CI in week 2
+
+You do not need a huge framework to start, but you do need consistency. Use a small YAML or JSON dataset plus a runner that produces a report artifact.
+
+A simple eval dataset shape:
+- Input question.
+- Context identifier (invoice_id, ticket_id).
+- Expected key points.
+- Disallowed behaviors (no cross-tenant refs, no invented numbers).
+
+## Logging without creating a new data breach
+
+Log enough to debug, not enough to leak.
+
+Log categories:
+- Request metadata (tenant_id, user_id, feature flag cohort, model version).
+- Retrieval metadata (doc ids, chunk ids, not full content).
+- Tool calls (name, args redacted, latency).
+- Outputs (redacted; or store only hashes + structured fields).
+
+Redaction rules:
+- Secrets: Always drop.
+- PII: Tokenize or hash.
+- Customer content: Store minimal spans or identifiers, not full text, unless explicitly approved.
+
+## Final takeaway
+
+A 30-day AI ship is realistic if you treat it as a controlled product experiment: one job, thin end-to-end slice in week 1, evals that block regressions in week 2, UX and reliability hardening in week 3, and gated rollout plus monitoring in week 4.
+
+## Sources
+
+<ul className="sources-list">
+  <li>NIST AI Risk Management Framework (AI RMF 1.0) (PDF). <a href="https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf">https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf</a></li>
+  <li>NIST AI RMF overview page. <a href="https://www.nist.gov/itl/ai-risk-management-framework">https://www.nist.gov/itl/ai-risk-management-framework</a></li>
+  <li>NIST AI 600-1: Generative AI Profile (PDF). <a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf">https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf</a></li>
+  <li>Microsoft Responsible AI Standard v2 (General Requirements) (PDF). <a href="https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/final/en-us/microsoft-brand/documents/Microsoft-Responsible-AI-Standard-General-Requirements.pdf">https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/final/en-us/microsoft-brand/documents/Microsoft-Responsible-AI-Standard-General-Requirements.pdf</a></li>
+  <li>Guidelines for Human-AI Interaction (Microsoft Research, PDF). <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2019/01/Guidelines-for-Human-AI-Interaction-camera-ready.pdf">https://www.microsoft.com/en-us/research/wp-content/uploads/2019/01/Guidelines-for-Human-AI-Interaction-camera-ready.pdf</a></li>
+  <li>OpenAI: Working with evals. <a href="https://platform.openai.com/docs/guides/evals">https://platform.openai.com/docs/guides/evals</a></li>
+  <li>OpenAI Cookbook: Getting started with OpenAI Evals. <a href="https://developers.openai.com/cookbook/examples/evaluation/getting_started_with_openai_evals">https://developers.openai.com/cookbook/examples/evaluation/getting_started_with_openai_evals</a></li>
+  <li>Google Cloud: Define your evaluation metrics for generative AI. <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/models/determine-eval">https://cloud.google.com/vertex-ai/generative-ai/docs/models/determine-eval</a></li>
+  <li>Google Cloud blog: How to evaluate your gen AI at every stage. <a href="https://cloud.google.com/blog/products/ai-machine-learning/how-to-evaluate-your-gen-ai-at-every-stage">https://cloud.google.com/blog/products/ai-machine-learning/how-to-evaluate-your-gen-ai-at-every-stage</a></li>
+  <li>Google Cloud: What are AI hallucinations? <a href="https://cloud.google.com/discover/what-are-ai-hallucinations">https://cloud.google.com/discover/what-are-ai-hallucinations</a></li>
+</ul>

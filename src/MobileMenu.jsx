@@ -1,12 +1,16 @@
 // src/components/MobileMenu.jsx
 import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 
 const MobileMenu = ({ onClose, ThemeToggleButton, scrollToSection }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const navItems = [
     { id: 'about', label: 'About' },
-    { id: 'skills', label: 'Skills' },
     { id: 'experience', label: 'Experience' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'blog', label: 'Blog' },
     { id: 'education', label: 'Education' },
     { id: 'projects', label: 'Projects' },
     { id: 'values', label: 'Values' },
@@ -37,9 +41,18 @@ const MobileMenu = ({ onClose, ThemeToggleButton, scrollToSection }) => {
     
     // Small delay to ensure menu closes before scrolling
     setTimeout(() => {
+      if (section === 'blog') {
+        navigate('/blog');
+        return;
+      }
+      if (location.pathname !== '/') {
+        navigate(`/#${section}`);
+        return;
+      }
       scrollToSection(section);
     }, 100);
   };
+
 
   return (
     <div

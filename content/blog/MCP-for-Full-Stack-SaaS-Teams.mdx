@@ -1,0 +1,243 @@
+---
+title: "MCP for Full-Stack SaaS Teams"
+date: "2026-02-01"
+readTime: "12 min read"
+author: "Prabhu Kiran Avula"
+excerpt: "Model Context Protocol (MCP) is a standard client-server pattern for connecting models to tools and data. This guide shows where MCP fits in a typical SaaS architecture, why the MCP server works best as a tool-adapter layer behind your existing auth, and how to prevent tenant data leakage through tool routing."
+cover: "/blog/mcp.png"
+tags: ["AI/ML", "Software Engineering", "MCP", "SaaS", "Architecture", "Security", "MultiTenancy"]
+---
+
+import CodeTabs from "../../src/components/CodeTabs";
+
+## Why MCP matters for SaaS teams
+
+Teams are wiring models into products the same way they wired payment providers and analytics a decade ago: one integration at a time, per tool, per surface area. It works until it does not. The integration count grows, auth paths diverge, and tool calling turns into a patchwork of bespoke adapters that are hard to secure and harder to audit.
+
+Model Context Protocol (MCP) is a response to that fragmentation: a standardized way for an LLM host application to talk to servers that expose tools and context through a consistent interface.
+
+If you are a full-stack team building a SaaS product, the most practical framing is simple. MCP is a client-server integration layer, implemented over JSON-RPC 2.0, that sits between your model hosting app and the systems that hold tools and data.
+
+## MCP in one picture: host, client, server
+
+The MCP specification defines a few roles:
+
+- **Host**: the LLM application that initiates connections (your AI assistant inside the SaaS app).
+- **Client**: the connector component inside the host that speaks MCP.
+- **Server**: a service that exposes capabilities to the client (tools, resources, prompts) over defined transports.
+
+On top of JSON-RPC, MCP standardizes how servers expose:
+
+- **Tools**: actions the model can request (create_invoice, search_projects).
+- **Resources**: data or context the host can retrieve (project://123/brief, schema://timesheets).
+- **Prompts**: reusable prompt templates or workflows a server can publish to clients.
+
+MCP also takes explicit inspiration from the Language Server Protocol: one protocol, many servers, and broad ecosystem compatibility.
+
+## Where MCP fits in a typical SaaS architecture
+
+A common mistake is to treat MCP as the new backend. It is not. Your SaaS still needs its normal API, auth, RBAC, and data plane. MCP is an additional integration surface that packages model-relevant actions and context into a standardized shape.
+
+A clean mental model:
+
+- **Your existing SaaS API remains the system of record.**
+- **Your AI feature is a host app that needs safe access to tools and data.**
+- **Your MCP server sits between them as a tool-adapter layer.**
+
+A typical layout:
+
+- Web app and UI
+- Core API (REST or GraphQL)
+- Auth (OIDC or OAuth2, sessions or JWT, RBAC)
+- Data plane (DB, object store, search, queues)
+- AI layer (prompting, retrieval, evals, guardrails)
+- **MCP server(s)** (tool adapters, resource exporters)
+
+In practice, the MCP server often fronts existing internal services:
+
+- It translates an MCP tool call into internal API calls.
+- It enforces what tools exist and what inputs are allowed.
+- It returns typed results designed for models and audit logs designed for humans.
+
+## Why the MCP server should sit behind existing auth
+
+The most stable pattern for SaaS teams is to reuse what already works:
+
+1) Your product already has user identity and tenant membership.
+2) Your product already has permissions.
+3) Your product already has audit logging.
+4) Your product already has rate limiting and abuse controls.
+
+So do not build a parallel auth universe just for MCP. Treat the MCP server as a resource server that trusts your existing authorization system and passes tenant context through every call.
+
+## MCP server as a tool-adapter layer
+
+Think of the MCP server as a thin, explicit compatibility layer with three responsibilities:
+
+- **Capability mapping**: define tools, resources, and prompts in a stable schema.
+- **Policy enforcement**: validate inputs, enforce permissions, and lead with least privilege.
+- **Provenance and logging**: record who invoked what, with what tenant context, and what data was touched.
+
+A useful internal structure:
+
+- `ToolRegistry`: declarative inventory of tools, schemas, and required permissions
+- `TenantContextResolver`: derives tenant_id, user_id, roles, and entitlements from auth
+- `PolicyEngine`: checks tool invocation rules (tenant isolation, scopes, field-level limits)
+- `Adapters`: translate tool invocations into internal API calls (or direct DB queries)
+- `AuditLogger`: writes an immutable trail for every tool or resource access
+
+## The real risk: leaking tenant data via tool routing
+
+Tenant data leakage in tool-using systems usually comes from one of these failures:
+
+- **Context confusion**: the wrong tenant context is used when executing a tool.
+- **Tool over-breadth**: a tool can search everything and relies on the prompt to filter.
+- **Credential misbinding**: a token meant for one resource is accepted by another.
+- **Prompt or tool injection**: untrusted content causes the system to call tools outside intended bounds.
+
+MCP helps standardize the interface, but the protocol alone does not guarantee tenant isolation. You have to design routing and authorization so that the correct tenant boundary is enforced even under adversarial prompts.
+
+## A concrete routing policy: tenant as a first-class parameter
+
+Do not rely on the model to mention the tenant. Tenant context must be derived from authenticated identity and then propagated through every hop.
+
+A simple rule set:
+
+- Tenant context is derived only from auth and never from model text.
+- Every tool invocation requires a tenant_id in server-side context.
+- Tool execution must use tenant-scoped credentials or tenant-scoped queries.
+- Tool results must be filtered server-side; the model never sees cross-tenant rows.
+
+Example (pseudocode):
+
+<CodeTabs
+  tabs={[
+    {
+      label: "JavaScript",
+      language: "javascript",
+      code: `async function invokeTool(toolName, args, ctx) {
+  const tool = ToolRegistry.get(toolName);
+
+  // 1) Schema validation (reject unknown fields)
+  const parsedArgs = tool.schema.parse(args);
+
+  // 2) Authorization (RBAC/ABAC/entitlements)
+  PolicyEngine.assertAllowed({
+    tenantId: ctx.tenantId,
+    userId: ctx.userId,
+    roles: ctx.roles,
+    toolName,
+    args: parsedArgs
+  });
+
+  // 3) Execution with tenant scoping (never optional)
+  const result = await tool.adapter.execute(parsedArgs, {
+    tenantId: ctx.tenantId,
+    userId: ctx.userId
+  });
+
+  // 4) Audit trail
+  AuditLogger.logToolCall({
+    tenantId: ctx.tenantId,
+    userId: ctx.userId,
+    toolName,
+    args: parsedArgs,
+    resultMeta: tool.redactResultMeta(result)
+  });
+
+  return result;
+}`
+    },
+    {
+      label: "Python",
+      language: "python",
+      code: `class TenantContext:
+    def __init__(self, tenant_id, user_id, roles, entitlements):
+        self.tenant_id = tenant_id
+        self.user_id = user_id
+        self.roles = roles
+        self.entitlements = entitlements
+
+async def invoke_tool(tool_name, args, ctx):
+    tool = ToolRegistry.get(tool_name)
+
+    # 1) Schema validation (reject unknown fields)
+    parsed_args = tool.schema.parse(args)
+
+    # 2) Authorization (RBAC/ABAC/entitlements)
+    PolicyEngine.assert_allowed({
+        "tenantId": ctx.tenant_id,
+        "userId": ctx.user_id,
+        "roles": ctx.roles,
+        "toolName": tool_name,
+        "args": parsed_args
+    })
+
+    # 3) Execution with tenant scoping (never optional)
+    result = await tool.adapter.execute(parsed_args, {
+        "tenantId": ctx.tenant_id,
+        "userId": ctx.user_id
+    })
+
+    # 4) Audit trail
+    AuditLogger.log_tool_call({
+        "tenantId": ctx.tenant_id,
+        "userId": ctx.user_id,
+        "toolName": tool_name,
+        "args": parsed_args,
+        "resultMeta": tool.redact_result_meta(result)
+    })
+
+    return result`
+    }
+  ]}
+/>
+
+This is not "nice to have". This is the core control that prevents "tool routing" from becoming a covert data exfiltration channel.
+
+## Token mis-redemption and resource-bound tokens
+
+In multi-service ecosystems, one recurring OAuth risk is that a token intended for service A is accepted by service B. Resource Indicators (RFC 8707) are designed to mitigate this by letting the client request a token explicitly bound to a target resource.
+
+In SaaS terms: if you run multiple MCP servers, you want tokens to be audience-restricted so a compromised component cannot reuse a token against a different protected resource.
+
+## Defense-in-depth checklist for no tenant leakage
+
+Implement these controls together because each covers a different failure mode:
+
+- **Tenant-derived context only**: tenant_id comes from auth, not prompts.
+- **Tool allowlists per tenant**: a tenant only sees tools they have enabled or paid for.
+- **Strict schemas**: reject unknown tool args; constrain selectors.
+- **Server-side filtering**: never return unfiltered global search results to the model.
+- **Per-tenant credentials**: acquire tenant-scoped credentials for downstream access.
+- **Resource-bound tokens**: use RFC 8707 style resource indicators so tokens cannot be replayed across resources.
+- **Audit everything**: log tool name, tenant_id, user_id, input hash, output metadata, latency, and downstream resources touched.
+- **Rate limits by tenant**: prevent noisy-neighbor and brute-force enumeration patterns.
+- **Safe defaults**: if tenant context is missing or ambiguous, fail closed and return a safe refusal.
+
+> The model should never be in a position to choose which tenant a tool runs against.
+
+## Putting it all together in a SaaS rollout plan
+
+A pragmatic path for full-stack teams:
+
+- Start with a single internal MCP server that wraps your safest read-only tools.
+- Add write tools only after you have audit trails, idempotency, explicit user confirmation, and strong RBAC.
+- Use one MCP gateway per environment (dev, stage, prod) with centralized auth, then fan out to internal adapters.
+- Add tenant isolation tests: attempt cross-tenant prompts and verify tool execution fails closed.
+
+## Final takeaway
+
+MCP is best understood as a standard client-server integration pattern for connecting models to tools and data, not as a replacement for your SaaS backend. For full-stack teams, the winning architecture is an MCP server that operates as a tool-adapter layer behind your existing auth, with tenant context derived from identity and enforced at every tool boundary.
+
+If you treat tool routing as a security boundary and bind credentials and tokens to the right resource, you can deliver powerful AI capabilities without turning your multi-tenant system into a silent data leak machine.
+
+## Sources
+
+<ul className="sources-list">
+  <li>Model Context Protocol specification. <a href="https://modelcontextprotocol.io">https://modelcontextprotocol.io</a></li>
+  <li>JSON-RPC 2.0 specification. <a href="https://www.jsonrpc.org/specification">https://www.jsonrpc.org/specification</a></li>
+  <li>Language Server Protocol. <a href="https://microsoft.github.io/language-server-protocol/">https://microsoft.github.io/language-server-protocol/</a></li>
+  <li>OAuth 2.0 Resource Indicators (RFC 8707). <a href="https://www.rfc-editor.org/rfc/rfc8707">https://www.rfc-editor.org/rfc/rfc8707</a></li>
+  <li>OAuth 2.0 Authorization Framework (RFC 6749). <a href="https://www.rfc-editor.org/rfc/rfc6749">https://www.rfc-editor.org/rfc/rfc6749</a></li>
+</ul>

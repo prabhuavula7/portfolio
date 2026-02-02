@@ -20,7 +20,7 @@ const Hero = ({ threeJsCanvasRef, scrollToSection }) => {
           }}
         >
           <span>Hey,</span> <span>I'm</span> <span>Prabhu</span> <span>Kiran</span> <span>Avula,</span> <br className="hidden md:block" />
-          <span>an</span> <span>Full Stack Developer and AI/ML Enthusiast</span>
+          <span>a</span> <span>Full Stack Developer and AI/ML Enthusiast</span>
         </h1>
         
         <p className="text-lg md:text-xl max-w-3xl mx-auto mb-10 opacity-0 animate-fade-in delay-2000 font-medium drop-shadow-lg"
