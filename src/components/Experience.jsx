@@ -5,7 +5,7 @@ const Experience = () => {
     {
       id: 1,
       company: "ActionAtlas Inc.",
-      role: "Full Stack Developer",
+      role: "Founding Full Stack Developer",
       duration: "Aug 2025 - Present",
       location: "Bellevue, WA",
       achievements: [
@@ -15,7 +15,7 @@ const Experience = () => {
         "Collaborated cross-functionally with design, product, and backend teams to deliver features end-to-end, ensuring smooth releases and platform stability",
         "Implemented Data Science features including advanced reporting dashboards, data exports, and analytics tools to empower users with actionable insights."
       ],
-      technologies: ["React", "Node.js", "AWS", "Stripe", "Auth0", "Datadog", "JavaScript", "Python", "Posthog", "MongoDB"],
+      technologies: ["React", "AWS", "Stripe", "Auth0", "Datadog", "JavaScript", "Python", "MERN", "MongoDB"],
       logo: "🎨",
     },
     {
@@ -49,13 +49,13 @@ const Experience = () => {
     {
       id: 4,
       company: "HighRadius Corporation",
-      role: "Technical Consultant",
+      role: "Software Consultant",
       duration: "Feb 2021 - Dec 2022",
       location: "Hyderabad, India",
       achievements: [
-        "As a Technical Consultant for the Cash Application module, I focused on AI/ML-enabled solutions. I designed and deployed automation solutions using machine learning frameworks to automate 85% of remittance data extraction, reducing manual processing time by 65% for 10,000+ monthly documents across global clients. Developed predictive models that improved cash application matching accuracy to 88%, resolving thousands of payment mismatches and accelerating financial reconciliations. Engineered real-time discrepancy detection systems to reduce unprocessed payment disputes by 55% and automated ERP reconciliations (SAP/Oracle), cutting processing time by 50% while achieving 97% accuracy in multi-currency environments. Led cross-functional teams in end-to-end SaaS implementations, integrating AI solutions with enterprise systems (e.g., Spark, GCP) and optimizing data pipelines to align with business workflows. My expertise lies in ML models, refining data infrastructure, and delivering technical solutions that efficiently bridge complex systems."
+        "As a Software Consultant for the Cash Application module, I focused on AI/ML-enabled solutions. I designed and deployed automation solutions to automate 85% of remittance data extraction, reducing manual processing time by 65% for 10,000+ monthly documents across global clients. Developed predictive models that improved cash application matching accuracy to 88%, resolving thousands of payment mismatches and accelerating financial reconciliations. Engineered real-time discrepancy detection systems to reduce unprocessed payment disputes by 55% and automated ERP reconciliations (SAP/Oracle), cutting processing time by 50% while achieving 97% accuracy in multi-currency environments. Led cross-functional teams in end-to-end SaaS implementations, integrating AI solutions with enterprise systems (e.g., Spark, GCP) and optimizing data pipelines to align with business workflows. My expertise lies in ML models, refining data infrastructure, and delivering technical solutions that efficiently bridge complex systems."
       ],
-      technologies: ["Google Clour", "SQL", "SAP", "Oracle", "Consulting", "Software Project Management", "Computer Vision"],
+      technologies: ["GCP", "Python", "SQL", "SAP", "Oracle", "Consulting", "Software Project Management", "Computer Vision"],
       logo: "🏢",
     },
     {
