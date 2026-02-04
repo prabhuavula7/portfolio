@@ -1,0 +1,322 @@
+---
+title: "Vibecoding without regrets"
+date: "2026-02-04"
+readTime: "11 min read"
+author: "Prabhu Kiran Avula"
+excerpt: "Vibecoding can be a superpower for prototypes and spikes, and a trap for production systems. This guide explains the how and why, then gives a practical operating model: you own the architecture and decisions, the agent owns execution, and your process prevents debugging hell."
+cover: "/blog/vibecoding.png"
+tags: ["Vibecoding", "AI", "Software Engineering", "DevTools", "Best Practices"]
+---
+
+import CodeTabs from "../../src/components/CodeTabs";
+
+## Context
+
+"Vibecoding" became shorthand for a real shift in how software gets written: you describe intent in natural language, an LLM generates code, and you iterate based on results rather than typing every line.
+
+Used well, it compresses the cost of experimentation. Used carelessly, it creates a new kind of technical debt: code that works today but is one edge case away from a weekend of debugging, because the human never built a reliable mental model of what the system actually does.
+
+This article is a practical guide to vibe-coding as a professional workflow: what it is, why it works, where it fails, and how to design a process that keeps you fast without losing control.
+
+## What vibe-coding is and why it works
+
+Vibe-coding is not "using AI to code." It is a specific posture:
+
+- You express goals, constraints, and feedback in natural language.
+- The model writes most of the code.
+- The human evaluates by running, testing, and iterating.
+
+The key variable is how much you inspect and understand the code. If you review, test, and understand what is produced, you are doing AI-assisted development. If you mostly accept generated code and steer by outputs, you are closer to vibe-coding in the strict sense.
+
+That distinction matters because it predicts failure modes.
+
+### Why it feels so productive
+
+Vibe-coding works because it reduces three high-friction costs:
+
+- Scaffolding cost: boilerplate, wiring, glue code, config, integration setup
+- Context switching cost: "what file, what pattern, what API again"
+- Iteration cost: quick edits, refactors, renames, repetitive fixes
+
+Modern agentic tools also shift the bottleneck from typing to specifying. You are effectively delegating implementation to a very fast junior engineer who never gets tired, but also does not reliably know what matters unless you tell it.
+
+### My take, operationalized
+
+My healthiest version of vibe-coding:
+
+- I use AI tools to test new workflows across editors, terminals, and coding agents.
+- I keep decision-making with myself: architecture, scoping, trade-offs, sequencing.
+- I treat agents as execution engines, then I review and refine until it matches my intent.
+- I have noticed that "base code" is rarely great and needs tightening.
+- I have also seen the trap: if I skip understanding, I end up in debugging hell.
+
+That is the core thesis of this article:
+
+> Vibe-coding is good when you separate **decision power** from **typing power**.
+
+### The tool ecosystem and why it changes the workflow
+
+A vibe-coding stack typically has three layers:
+
+- Agentic IDE or editor for repo-aware edits and fast iteration
+- AI-native terminal for command execution and guided workflows
+- Coding agents for longer-running tasks, refactors, and multi-step changes
+
+Agent-first platforms push this further by turning planning, execution, and verification into structured artifacts inside the workflow. This ecosystem matters because it increases throughput faster than it increases assurance. Your process has to compensate.
+
+### When vibe-coding is a good idea
+
+Use vibe-coding when the goal is learning or speed-to-first-working:
+
+- Spikes, prototypes, demos, internal tools
+- Throwaway scripts and one-off migrations, with guardrails
+- Integration scaffolding and boilerplate
+- UI iteration where the cost of change is low
+
+A simple heuristic:
+
+- If the blast radius is small and rollback is easy, vibe-coding is usually fine.
+- If correctness, security, or maintainability are first-order, you need a stricter loop.
+
+### When vibe-coding goes sideways
+
+The common failure modes are predictable:
+
+- Hidden complexity: the agent solves by adding layers you did not ask for
+- Edge-case brittleness: the happy path works but weird inputs break everything
+- Inconsistent style: multiple patterns, inconsistent error handling, confusing naming
+- Security footguns: unsafe defaults, weak validation, accidental data exposure
+- Debugging debt: you cannot reason about failures because you did not build a model
+
+These are not moral failures. They are normal outcomes of delegating implementation without enforcing constraints.
+
+## A professional vibe-coding loop
+
+### 1) Write a spec before you prompt
+
+Do not start with "build X." Start with a small spec that includes:
+
+- Goal and non-goals
+- Interfaces (inputs, outputs)
+- Constraints (latency, cost, security, compatibility)
+- Acceptance tests (what "done" means)
+
+Keep it short. One page is enough.
+
+A minimal spec can be a markdown file committed with the PR:
+
+```md
+# Feature: rate-limited signup
+
+Goal: Protect signup endpoint from brute force and abuse.
+Non-goals: Full bot detection; CAPTCHA.
+Constraints: No new external dependencies; keep p95 < 150ms.
+
+Acceptance:
+- 429 after 5 requests/min per IP
+- Logs include request_id and rate-limit decision
+- Unit tests cover allow/deny paths
+```
+
+This spec becomes your anchor when the agent starts drifting.
+
+### 2) Make the agent plan in steps, then execute in small diffs
+
+Ask for:
+
+- A brief plan
+- One step at a time
+- Small PR-sized diffs
+
+This keeps you out of 1,200-line surprise refactor territory.
+
+### 3) Require tests or a runnable check as part of every change
+
+If there is no test suite, create a thin harness:
+
+- Unit tests for core logic
+- Golden tests for parsing and formatting
+- Smoke tests for endpoints
+
+The agent can write tests quickly. You should insist on them consistently.
+
+### 4) Force observability into the output
+
+A vibe-coded system without logs is a time bomb. Require:
+
+- Structured logs
+- Stable error codes
+- Traceable request IDs
+- Clear failure modes
+
+If you cannot observe it, you cannot safely delegate to it.
+
+### 5) Review for risk, not for style
+
+Your review checklist should prioritize:
+
+- Correctness and invariants
+- Security boundaries (auth, input validation, data exposure)
+- Performance cliffs (N+1 queries, large allocations, unbounded loops)
+- Maintainability (cohesion, clear interfaces)
+
+Style matters, but it is secondary.
+
+### Best practices that actually prevent debugging hell
+
+#### Use bounded prompts
+
+Tell the agent what it must not do:
+
+- No new dependencies unless explicitly approved
+- No schema changes unless explicitly approved
+- No background jobs unless explicitly approved
+- Do not touch unrelated files
+- Keep changes within X files
+
+#### Prefer tooling as guardrails
+
+- Linters and formatters
+- Type checks
+- Unit tests in CI
+- Static analysis
+- Pre-commit hooks
+
+Tools catch what the agent will miss.
+
+#### Treat security as a first-class constraint
+
+Agentic workflows introduce new attack surfaces: prompt injection, unsafe tool calls, accidental secret exposure. Use established guidance for LLM and application security to shape your policies.
+
+At minimum:
+
+- Never paste production secrets into prompts
+- Redact logs and traces
+- Validate inputs strictly
+- Keep privileged actions behind approval gates
+- Restrict what tools can do and what data they can access
+
+### A concrete vibe-coding contract for agents
+
+When you ask an agent to build something from scratch, provide a contract it must follow. Here is an example you can reuse.
+
+<CodeTabs
+  tabs={[
+    {
+      label: "TypeScript",
+      language: "typescript",
+      code: `/**
+ * Agent Contract: Implement feature changes safely.
+ *
+ * Rules:
+ * 1. Do not change database schema without asking.
+ * 2. Keep diffs small (<= 300 LOC per step).
+ * 3. Add or update tests for every behavior change.
+ * 4. No new dependencies without asking.
+ * 5. All logs must be structured and must not include secrets.
+ */
+export type AgentStep = {
+  plan: string[];
+  changes: Array<{ files: string[]; summary: string }>;
+  tests: string[];
+  rollback: string;
+};
+
+export function buildAgentTask(specPath: string): string {
+  return [
+    "Read the spec at: " + specPath,
+    "Propose a 3-6 step plan with small diffs.",
+    "Execute step 1 only, then stop and summarize.",
+    "Include: tests run, files changed, and any follow-ups.",
+  ].join("\n");
+}`,
+    },
+    {
+      label: "Python",
+      language: "python",
+      code: `"""
+Agent Contract: Implement feature changes safely.
+
+Rules:
+1. No schema changes without asking.
+2. Small diffs (<= 300 LOC per step).
+3. Tests required for behavior changes.
+4. No new dependencies without asking.
+5. Structured logs, never log secrets.
+"""
+
+def build_agent_task(spec_path: str) -> str:
+    return "\n".join([
+        f"Read the spec at: {spec_path}",
+        "Propose a 3-6 step plan with small diffs.",
+        "Execute step 1 only, then stop and summarize.",
+        "Include: tests run, files changed, and follow-ups.",
+    ])
+`,
+    },
+    {
+      label: "Java",
+      language: "java",
+      code: `/**
+ * Agent Contract: Implement feature changes safely.
+ *
+ * Rules:
+ * 1. No schema changes without asking.
+ * 2. Keep diffs small per step.
+ * 3. Tests required for behavior changes.
+ * 4. No new dependencies without asking.
+ * 5. Structured logs; never log secrets.
+ */
+public final class AgentTaskBuilder {
+  public static String build(String specPath) {
+    return String.join("\n",
+      "Read the spec at: " + specPath,
+      "Propose a 3-6 step plan with small diffs.",
+      "Execute step 1 only, then stop and summarize.",
+      "Include: tests run, files changed, and follow-ups."
+    );
+  }
+}
+`,
+    },
+  ]}
+/>
+
+### A simple rubric: when to stop vibe-coding
+
+Vibe-coding should have an exit condition. Stop and switch to a stricter mode when:
+
+- The agent's changes get larger instead of smaller
+- Bugs repeat in adjacent areas
+- The system touches auth, billing, data isolation, or secrets
+- You cannot explain the change set in two minutes
+- Performance becomes unpredictable
+
+When that happens, slow down:
+
+- Re-scope the task
+- Rewrite the spec
+- Tighten constraints
+- Require a plan and incremental steps again
+
+## Final takeaway
+
+Vibe-coding is not inherently good or bad. It is leverage.
+
+If you let the agent own decisions, you will get short-term velocity and long-term chaos. If you own the architecture, scope, and acceptance criteria, and you force tests, observability, and small diffs, vibe-coding becomes a practical way to explore tools and ship faster without losing control.
+
+## Sources
+
+<ul className="sources-list">
+  <li><a href="https://x.com/karpathy/status/1886192184808149383?lang=en">There is a new kind of coding I call vibe coding (A. Karpathy post)</a></li>
+  <li><a href="https://simonwillison.net/2025/Mar/19/vibe-coding/">Not all AI-assisted programming is vibe coding (Simon Willison)</a></li>
+  <li><a href="https://cloud.google.com/discover/what-is-vibe-coding">What is vibe coding? (Google Cloud explainer)</a></li>
+  <li><a href="https://code.claude.com/docs/en/overview">Claude Code overview (docs)</a></li>
+  <li><a href="https://www.anthropic.com/engineering/claude-code-best-practices">Claude Code best practices (Anthropic engineering)</a></li>
+  <li><a href="https://openai.com/index/introducing-codex/">Introducing Codex (OpenAI)</a></li>
+  <li><a href="https://developers.openai.com/codex/">Codex developer docs (OpenAI)</a></li>
+  <li><a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/">OWASP Top 10 for Large Language Model Applications</a></li>
+  <li><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">OWASP LLM Prompt Injection guidance</a></li>
+  <li><a href="https://www.warp.dev/ai">Warp Agent Mode</a></li>
+  <li><a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/">Build with Google Antigravity, our new agentic development platform</a></li>
+</ul>
