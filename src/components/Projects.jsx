@@ -7,7 +7,12 @@ const Projects = () => {
       title: "Sana - Your Empathetic AI Companion",
       field: "AI/ML",
       description: "A privacy-respecting, multilingual AI chatbot built for safe, emotionally aware mental health support.",
-      technologies: ["python", "react", "nodejs", "mongodb"],
+      technologies: [
+        { name: 'Python', logo: '/logos/python.svg' },
+        { name: 'React', logo: '/logos/react.svg' },
+        { name: 'Node.js', logo: '/logos/nodejs.svg' },
+        { name: 'MongoDB', logo: '/logos/mongodb.svg' },
+      ],
       achievements: ["Multilingual support", "Emotionally aware", "Privacy-focused"],
       github: "https://github.com/prabhuavula7/Sana"
     },
@@ -16,7 +21,12 @@ const Projects = () => {
       title: "BrightSteps",
       field: "AI/ML",
       description: "An AI-powered learning app for neurodivergent children — featuring adaptive flashcards, image-based sentence building, and AI-scored pronunciation practice.",
-      technologies: ["openai", "gemini", "elevenlabs", "nextjs"],
+      technologies: [
+        { name: 'OpenAI', logo: '/logos/openai.png' },
+        { name: 'Gemini', logo: '/logos/gemini.png' },
+        { name: 'ElevenLabs', logo: '/logos/elevenlabs.png' },
+        { name: 'Next.js', logo: '/logos/nextjs.svg' },
+      ],
       achievements: ["AI-scored pronunciation practice", "Privacy-first, no accounts required", "Adaptive learning modules"],
       github: "https://github.com/prabhuavula7/BrightSteps"
     },
@@ -25,7 +35,12 @@ const Projects = () => {
       title: "MCP Tools Server",
       field: "AI/ML",
       description: "A server that provides 40 tools for the MCP framework, allowing for the execution of tools in a chat-like interface.",
-      technologies: ["python", "replicate", "cursor", "docker"],
+      technologies: [
+        { name: 'Python', logo: '/logos/python.svg' },
+        { name: 'Replicate', logo: '/logos/replicate.jpeg' },
+        { name: 'Cursor', logo: '/logos/cursor.jpeg' },
+        { name: 'Docker', logo: '/logos/docker.svg' },
+      ],
       achievements: ["MCP framework", "Tool execution", "OpenAI integration"],
       github: "https://github.com/prabhuavula7/MCP-Tools-Integration"
     },
@@ -34,7 +49,12 @@ const Projects = () => {
       title: "Geopersona - Interactive Geography Game",
       field: "Full Stack",
       description: "An engaging geography quiz game that tests your knowledge of countries, capitals, and landmarks around the world.",
-      technologies: ["openai", "react", "js", "css"],
+      technologies: [
+        { name: 'OpenAI', logo: '/logos/openai.png' },
+        { name: 'React', logo: '/logos/react.svg' },
+        { name: 'JavaScript', logo: '/logos/js.svg' },
+        { name: 'CSS', logo: '/logos/css.svg' },
+      ],
       achievements: ["Interactive geography quizzes", "AI-powered hints", "Global knowledge testing"],
       github: "https://github.com/prabhuavula7/geopersona",
       liveLink: "https://geopersona.vercel.app"
@@ -167,152 +187,6 @@ const Projects = () => {
     }
   }, [scrollThreshold, touchStart, touchEnd]);
 
-  // Function to render technology logo or fallback
-  const techDisplayNames = {
-    openai: 'OpenAI',
-    elevenlabs: 'ElevenLabs',
-    gemini: 'Gemini',
-    nextjs: 'Next.js',
-    nodejs: 'Node.js',
-    mongodb: 'MongoDB',
-    python: 'Python',
-    react: 'React',
-    docker: 'Docker',
-    jupyter: 'Jupyter',
-    pandas: 'Pandas',
-    sklearn: 'Scikit-learn',
-    replicate: 'Replicate',
-    cursor: 'Cursor',
-    js: 'JavaScript',
-    css: 'CSS',
-  };
-
-  const renderTechLogo = (techName) => {
-    try {
-      // Special handling for specific technologies with different file types
-      if (techName === 'openai') {
-        return (
-          <img
-            src="/logos/openai.png"
-            alt="OpenAI logo"
-            className="w-6 h-6 object-contain"
-            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              // Show fallback when image fails
-              const fallback = document.createElement('div');
-              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
-              fallback.textContent = techName.charAt(0).toUpperCase();
-              e.target.parentNode.appendChild(fallback);
-            }}
-          />
-        );
-      }
-      
-      if (techName === 'replicate') {
-        return (
-          <img
-            src="/logos/replicate.jpeg"
-            alt="Replicate logo"
-            className="w-6 h-6 object-contain"
-            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              // Show fallback when image fails
-              const fallback = document.createElement('div');
-              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
-              fallback.textContent = techName.charAt(0).toUpperCase();
-              e.target.parentNode.appendChild(fallback);
-            }}
-          />
-        );
-      }
-      
-      if (techName === 'cursor') {
-        return (
-          <img
-            src="/logos/cursor.jpeg"
-            alt="Cursor logo"
-            className="w-6 h-6 object-contain"
-            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              // Show fallback when image fails
-              const fallback = document.createElement('div');
-              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
-              fallback.textContent = techName.charAt(0).toUpperCase();
-              e.target.parentNode.appendChild(fallback);
-            }}
-          />
-        );
-      }
-      
-      if (techName === 'gemini') {
-        return (
-          <img
-            src="/logos/gemini.png"
-            alt="Gemini logo"
-            className="w-6 h-6 object-contain"
-            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-          />
-        );
-      }
-
-      if (techName === 'elevenlabs') {
-        return (
-          <img
-            src="/logos/elevenlabs.png"
-            alt="ElevenLabs logo"
-            className="w-6 h-6 object-contain"
-            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-          />
-        );
-      }
-
-      if (techName === 'sklearn') {
-        return (
-          <img
-            src="/logos/scikitlearn.svg"
-            alt="Scikit-learn logo"
-            className="w-6 h-6 object-contain"
-            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              // Show fallback when image fails
-              const fallback = document.createElement('div');
-              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
-              fallback.textContent = techName.charAt(0).toUpperCase();
-              e.target.parentNode.appendChild(fallback);
-            }}
-          />
-        );
-      }
-      
-      // All other technologies use SVG
-      return (
-        <img
-          src={`/logos/${techName}.svg`}
-          alt={`${techName} logo`}
-          className="w-6 h-6 object-contain"
-          style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-          onError={(e) => {
-            e.target.style.display = 'none';
-            // Show fallback when image fails
-            const fallback = document.createElement('div');
-            fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
-            fallback.textContent = techName.charAt(0).toUpperCase();
-            e.target.parentNode.appendChild(fallback);
-          }}
-        />
-      );
-    } catch (error) {
-      return (
-        <div className="w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-xs">
-          {techName.charAt(0).toUpperCase()}
-        </div>
-      );
-    }
-  };
 
   return (
     <section id="projects" className="py-20 bg-section-light dark:bg-section-dark">
@@ -372,9 +246,13 @@ const Projects = () => {
                       {project.technologies.map((tech, index) => (
                         <div key={index} className="flex flex-col items-center">
                           <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-lg p-2 mb-2">
-                            {renderTechLogo(tech)}
+                            <img
+                              src={tech.logo}
+                              alt={`${tech.name} logo`}
+                              className="max-w-full max-h-full object-contain"
+                            />
                           </div>
-                          <span className="text-sm text-content">{techDisplayNames[tech] || tech}</span>
+                          <span className="text-sm text-content">{tech.name}</span>
                         </div>
                       ))}
                     </div>
