@@ -168,6 +168,25 @@ const Projects = () => {
   }, [scrollThreshold, touchStart, touchEnd]);
 
   // Function to render technology logo or fallback
+  const techDisplayNames = {
+    openai: 'OpenAI',
+    elevenlabs: 'ElevenLabs',
+    gemini: 'Gemini',
+    nextjs: 'Next.js',
+    nodejs: 'Node.js',
+    mongodb: 'MongoDB',
+    python: 'Python',
+    react: 'React',
+    docker: 'Docker',
+    jupyter: 'Jupyter',
+    pandas: 'Pandas',
+    sklearn: 'Scikit-learn',
+    replicate: 'Replicate',
+    cursor: 'Cursor',
+    js: 'JavaScript',
+    css: 'CSS',
+  };
+
   const renderTechLogo = (techName) => {
     try {
       // Special handling for specific technologies with different file types
@@ -235,13 +254,6 @@ const Projects = () => {
             alt="Gemini logo"
             className="w-6 h-6 object-contain"
             style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              const fallback = document.createElement('div');
-              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
-              fallback.textContent = techName.charAt(0).toUpperCase();
-              e.target.parentNode.appendChild(fallback);
-            }}
           />
         );
       }
@@ -253,13 +265,6 @@ const Projects = () => {
             alt="ElevenLabs logo"
             className="w-6 h-6 object-contain"
             style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              const fallback = document.createElement('div');
-              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
-              fallback.textContent = techName.charAt(0).toUpperCase();
-              e.target.parentNode.appendChild(fallback);
-            }}
           />
         );
       }
@@ -369,7 +374,7 @@ const Projects = () => {
                           <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-lg p-2 mb-2">
                             {renderTechLogo(tech)}
                           </div>
-                          <span className="text-sm text-content capitalize">{tech}</span>
+                          <span className="text-sm text-content">{techDisplayNames[tech] || tech}</span>
                         </div>
                       ))}
                     </div>
