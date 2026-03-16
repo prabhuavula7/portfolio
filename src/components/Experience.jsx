@@ -22,7 +22,7 @@ const Experience = () => {
       id: 2,
       company: "Accessifiers Organization",
       role: "Machine Learning Engineer",
-      duration: "Feb 2025 - Dec 2025",
+      duration: "Nov 2024 - Aug 2025",
       location: "Seattle, WA",
       achievements: [
         "Led end-to-end design and implementation of an AI-driven mental health assistant for neurodiverse and deaf users, spanning data ingestion, model training, inference, and deployment, with multimodal support (text, image, audio, video) across Telegram and WhatsApp.",
@@ -36,7 +36,7 @@ const Experience = () => {
       id: 3,
       company: "Hack for LA",
       role: "Data Scientist",
-      duration: "Oct 2024 - Jan 2025",
+      duration: "Jun 2024 - Aug 2024",
       location: "Los Angeles, CA",
       achievements: [
         "Processed and analyzed a 12.5M+ Los Angeles parking citation dataset to enable neighborhood-level disparity visualization for civic engagement.",
