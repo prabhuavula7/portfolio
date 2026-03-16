@@ -13,12 +13,12 @@ const Projects = () => {
     },
     {
       id: 2,
-      title: "JetScope",
-      field: "Data Science",
-      description: "A passion project to predict US domestic air travel demand using historical data and machine learning.",
-      technologies: ["python", "jupyter", "pandas", "sklearn"],
-      achievements: ["Historical data analysis", "Time series forecasting", "Machine learning models"],
-      github: "https://github.com/prabhuavula7/JetScope"
+      title: "BrightSteps",
+      field: "AI/ML",
+      description: "An AI-powered learning app for neurodivergent children — featuring adaptive flashcards, image-based sentence building, and AI-scored pronunciation practice.",
+      technologies: ["openai", "gemini", "elevenlabs", "nextjs"],
+      achievements: ["AI-scored pronunciation practice", "Privacy-first, no accounts required", "Adaptive learning modules"],
+      github: "https://github.com/prabhuavula7/BrightSteps"
     },
     {
       id: 3,
@@ -228,6 +228,42 @@ const Projects = () => {
         );
       }
       
+      if (techName === 'gemini') {
+        return (
+          <img
+            src="/logos/gemini.png"
+            alt="Gemini logo"
+            className="w-6 h-6 object-contain"
+            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              const fallback = document.createElement('div');
+              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
+              fallback.textContent = techName.charAt(0).toUpperCase();
+              e.target.parentNode.appendChild(fallback);
+            }}
+          />
+        );
+      }
+
+      if (techName === 'elevenlabs') {
+        return (
+          <img
+            src="/logos/elevenlabs.png"
+            alt="ElevenLabs logo"
+            className="w-6 h-6 object-contain"
+            style={{ minWidth: '24px', minHeight: '24px', display: 'block' }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              const fallback = document.createElement('div');
+              fallback.className = 'w-6 h-6 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-bold text-sm';
+              fallback.textContent = techName.charAt(0).toUpperCase();
+              e.target.parentNode.appendChild(fallback);
+            }}
+          />
+        );
+      }
+
       if (techName === 'sklearn') {
         return (
           <img
