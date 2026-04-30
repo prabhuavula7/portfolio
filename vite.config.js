@@ -13,5 +13,9 @@ export default defineConfig({
     host: true,
     port: 5173,
   },
-  plugins: [mdx({ remarkPlugins: [remarkFrontmatter, [remarkMdxFrontmatter, { name: 'frontmatter' }]], rehypePlugins: [rehypeHighlight] }), react(), tailwindcss()],
+  plugins: [
+    { enforce: 'pre', ...mdx({ remarkPlugins: [remarkFrontmatter, [remarkMdxFrontmatter, { name: 'frontmatter' }]], rehypePlugins: [rehypeHighlight] }) },
+    react({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
+    tailwindcss(),
+  ],
 })

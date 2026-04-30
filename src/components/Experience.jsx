@@ -110,10 +110,12 @@ const Experience = () => {
   };
 
   return (
-    <section id="experience" className="py-16 bg-section-light dark:bg-section-dark">
-      <div className="container mx-auto px-6 max-w-7xl">
+    <section id="experience" className="py-16 bg-section-light dark:bg-section-dark relative overflow-hidden">
+      <div className="orb orb-accent orb-b" style={{ width: 360, height: 360, top: '-60px', right: '-60px' }} aria-hidden="true" />
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <div className="text-center mb-10">
-          <h2 className="text-4xl font-bold text-heading">Professional Experience</h2>
+          <h2 className="text-4xl font-bold text-heading mb-2 reveal">Professional Experience</h2>
+          <div className="section-heading-line reveal" />
         </div>
 
         <div className="grid grid-cols-1 md:[grid-template-columns:300px_minmax(0,1fr)] gap-8 items-stretch">

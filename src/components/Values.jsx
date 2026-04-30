@@ -29,16 +29,20 @@ const Values = () => {
   ];
 
   return (
-    <section id="values" className="py-16 md:py-24 bg-section-light dark:bg-section-dark transition-all">
-      <div className="container mx-auto px-6 max-w-7xl">
-        <h2 className="text-4xl font-bold text-center mb-12 text-heading">
-          My Core Values
-        </h2>
+    <section id="values" className="py-16 md:py-24 bg-section-light dark:bg-section-dark relative overflow-hidden">
+      <div className="orb orb-primary orb-c" style={{ width: 400, height: 400, top: '-80px', left: '-80px' }} aria-hidden="true" />
+      <div className="orb orb-accent orb-a" style={{ width: 300, height: 300, bottom: '-60px', right: '-40px' }} aria-hidden="true" />
+
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-heading mb-2 reveal">My Core Values</h2>
+          <div className="section-heading-line reveal" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
           {values.map((value, index) => (
             <div
               key={index}
-              className="glass-card p-6 rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-2xl group container-glow"
+              className={`glass-card p-6 rounded-2xl hover-float group container-glow reveal reveal-scale reveal-d${(index % 6) + 1}`}
             >
               <div className="flex flex-col items-center text-center mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-4 flex-shrink-0">

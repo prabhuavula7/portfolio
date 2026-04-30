@@ -3,20 +3,23 @@ import profileImg from '../assets/profileImg.jpeg';
 
 const About = () => {
   return (
-    <section id="about" className="py-20 bg-section-light dark:bg-section-dark">
-      <div className="container mx-auto px-4">
+    <section id="about" className="py-20 bg-section-light dark:bg-section-dark relative overflow-hidden">
+      {/* Floating orbs */}
+      <div className="orb orb-primary orb-a" style={{ width: 480, height: 480, top: '-120px', right: '-80px' }} aria-hidden="true" />
+      <div className="orb orb-accent orb-b" style={{ width: 320, height: 320, bottom: '-60px', left: '-60px' }} aria-hidden="true" />
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-heading mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-heading mb-2 reveal">
             About Me
           </h2>
-
+          <div className="section-heading-line reveal" />
         </div>
-        
-        {/* Cohesive Puzzle Grid - Small gaps for glow effects */}
+
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6 max-w-6xl mx-auto p-3">
-          
-          {/* Box 1: Profile - Top left (2x2) */}
-          <div className="glass-card p-6 rounded-tl-3xl md:col-span-2 lg:col-span-2 group hover:scale-105 transition-all duration-300 container-glow">
+
+          {/* Box 1: Profile */}
+          <div className="glass-card p-6 rounded-tl-3xl md:col-span-2 lg:col-span-2 group hover-float container-glow reveal reveal-d1">
             <div className="flex flex-col items-center text-center h-full">
               <div className="relative mb-4">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
@@ -34,8 +37,8 @@ const About = () => {
             </div>
           </div>
           
-          {/* Box 2: Global Perspective - Top right (2x1) */}
-          <div className="glass-card p-6 rounded-tr-3xl md:col-span-2 lg:col-span-2 group hover:scale-105 transition-all duration-300 container-glow">
+          {/* Box 2: Global Perspective */}
+          <div className="glass-card p-6 rounded-tr-3xl md:col-span-2 lg:col-span-2 group hover-float container-glow reveal reveal-d2">
             <div className="h-full flex flex-col">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-3">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,8 +52,8 @@ const About = () => {
             </div>
           </div>
           
-          {/* Box 3: Journey - Bottom left (1x2) */}
-          <div className="glass-card p-6 rounded-bl-3xl md:col-span-1 lg:col-span-1 group hover:scale-105 transition-all duration-300 container-glow">
+          {/* Box 3: Journey */}
+          <div className="glass-card p-6 rounded-bl-3xl md:col-span-1 lg:col-span-1 group hover-float container-glow reveal reveal-d3">
             <div className="h-full flex flex-col">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-3">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,8 +67,8 @@ const About = () => {
             </div>
           </div>
           
-          {/* Box 4: Philosophy - Bottom center (2x2) */}
-          <div className="glass-card p-6 md:col-span-2 lg:col-span-2 group hover:scale-105 transition-all duration-300 container-glow">
+          {/* Box 4: Philosophy */}
+          <div className="glass-card p-6 md:col-span-2 lg:col-span-2 group hover-float container-glow reveal reveal-d4">
             <div className="h-full flex flex-col">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-3">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,8 +85,8 @@ const About = () => {
             </div>
           </div>
           
-          {/* Box 5: Interests & Connect - Bottom right (1x2) */}
-          <div className="glass-card p-6 rounded-br-3xl md:col-span-1 lg:col-span-1 group hover:scale-105 transition-all duration-300 container-glow">
+          {/* Box 5: Interests & Connect */}
+          <div className="glass-card p-6 rounded-br-3xl md:col-span-1 lg:col-span-1 group hover-float container-glow reveal reveal-d5">
             <div className="h-full flex flex-col">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-3">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

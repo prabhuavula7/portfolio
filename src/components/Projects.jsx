@@ -32,20 +32,34 @@ const Projects = () => {
     },
     {
       id: 3,
-      title: "MCP Tools Server",
+      title: "Monocular",
       field: "AI/ML",
-      description: "A server that provides 40 tools for the MCP framework, allowing for the execution of tools in a chat-like interface.",
+      description: "AI-powered project scoping automation that converts client intake conversations into structured scope documents — cutting scoping time from 20–30 hours to 45 minutes.",
       technologies: [
-        { name: 'Python', logo: '/logos/python.svg' },
-        { name: 'Replicate', logo: '/logos/replicate.jpeg' },
-        { name: 'Cursor', logo: '/logos/cursor.jpeg' },
-        { name: 'Docker', logo: '/logos/docker.svg' },
+        { name: 'Claude', logo: '/logos/anthropic.png' },
+        { name: 'Next.js', logo: '/logos/nextjs.svg' },
+        { name: 'Supabase', logo: '/logos/supabase.jpeg' },
+        { name: 'Stripe', logo: '/logos/stripe.png' },
       ],
-      achievements: ["MCP framework", "Tool execution", "OpenAI integration"],
-      github: "https://github.com/prabhuavula7/MCP-Tools-Integration"
+      achievements: ["Reduces scoping from 20–30 hours to 45 minutes", "AI-driven intake with intelligent client questioning", "PDF export, inline editing, and team collaboration"],
+      github: "https://github.com/prabhuavula7/Monocular"
     },
     {
       id: 4,
+      title: "Meridian",
+      field: "Full Stack",
+      description: "Supply-chain disruption intelligence platform with real-time risk feeds, interactive incident maps, and AI-powered analytics across global shipping routes.",
+      technologies: [
+        { name: 'React', logo: '/logos/react.svg' },
+        { name: 'OpenAI', logo: '/logos/openai.png' },
+        { name: 'Python', logo: '/logos/python.svg' },
+        { name: 'Docker', logo: '/logos/docker.svg' },
+      ],
+      achievements: ["Real-time disruption feed with risk-level filtering", "Interactive incident maps with route enrichment", "CSV/XLS data ingestion with AI analysis"],
+      github: "https://github.com/prabhuavula7/Meridian"
+    },
+    {
+      id: 6,
       title: "Geopersona - Interactive Geography Game",
       field: "Full Stack",
       description: "An engaging geography quiz game that tests your knowledge of countries, capitals, and landmarks around the world.",
@@ -189,13 +203,15 @@ const Projects = () => {
 
 
   return (
-    <section id="projects" className="py-20 bg-section-light dark:bg-section-dark">
-      <div className="container mx-auto px-4">
+    <section id="projects" className="py-20 bg-section-light dark:bg-section-dark relative overflow-hidden">
+      <div className="orb orb-primary orb-a" style={{ width: 440, height: 440, bottom: '-80px', left: '-80px' }} aria-hidden="true" />
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-heading mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-heading mb-2 reveal">
             Featured Projects
           </h2>
-          <p className="text-xl text-content max-w-3xl mx-auto">
+          <div className="section-heading-line reveal" />
+          <p className="text-xl text-content max-w-3xl mx-auto mt-4 reveal reveal-d2">
             A selection of my most impactful work showcasing AI/ML Engineering, Full Stack Development, and Data Science
           </p>
         </div>
@@ -216,13 +232,11 @@ const Projects = () => {
                         e.target.style.setProperty('background-color', 'var(--primary)', 'important');
                         e.target.style.setProperty('color', 'white', 'important');
                         e.target.style.setProperty('border-color', 'var(--primary)', 'important');
-                        e.target.style.setProperty('box-shadow', '0 10px 25px rgba(139, 69, 19, 0.3)', 'important');
                       }}
                       onMouseLeave={(e) => {
                         e.target.style.removeProperty('background-color');
                         e.target.style.removeProperty('color');
                         e.target.style.removeProperty('border-color');
-                        e.target.style.removeProperty('box-shadow');
                       }}
                     >
                       {project.field}
@@ -282,14 +296,12 @@ const Projects = () => {
                         e.target.style.setProperty('background-color', 'var(--primary)', 'important');
                         e.target.style.setProperty('color', 'white', 'important');
                         e.target.style.setProperty('border-color', 'var(--primary)', 'important');
-                        e.target.style.setProperty('box-shadow', '0 10px 25px rgba(139, 69, 19, 0.3)', 'important');
-                        e.target.style.setProperty('transform', 'scale(1.05)', 'important');
+                        e.target.style.setProperty('transform', 'translateY(-2px)', 'important');
                       }}
                       onMouseLeave={(e) => {
                         e.target.style.removeProperty('background-color');
                         e.target.style.removeProperty('color');
                         e.target.style.removeProperty('border-color');
-                        e.target.style.removeProperty('box-shadow');
                         e.target.style.removeProperty('transform');
                       }}
                     >

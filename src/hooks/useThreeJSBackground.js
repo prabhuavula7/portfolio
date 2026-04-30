@@ -6,14 +6,13 @@ export const useThreeJSBackground = () => {
 
   useEffect(() => {
     const canvas = threeJsCanvasRef.current;
-    if (!canvas) {
-      console.warn("Three.js canvas reference not available.");
-      return;
-    }
+    if (!canvas) return;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    let renderer;
+    try {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
     
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -243,15 +242,15 @@ export const useThreeJSBackground = () => {
       document.removeEventListener('touchmove', onDocumentTouchMove);
       document.removeEventListener('click', onDocumentClick);
       window.removeEventListener('resize', onWindowResize);
-      
-      // Dispose of all geometries and materials
       shapes.forEach(shape => {
         shape.geometry.dispose();
         shape.material.dispose();
       });
-      
       renderer.dispose();
     };
+    } catch (err) {
+      console.warn('Three.js WebGL unavailable, skipping background:', err.message);
+    }
   }, []);
 
   return threeJsCanvasRef;

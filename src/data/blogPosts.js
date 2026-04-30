@@ -11,8 +11,7 @@ const parseDateLocal = (value) => {
 };
 
 const postModules = import.meta.glob('/content/blog/*.mdx', { eager: true });
-const rawModules = import.meta.glob('/content/blog/*.mdx', { eager: true, as: 'raw' });
-const rawModulesQuery = import.meta.glob('/content/blog/*.mdx', { eager: true, query: '?raw' });
+const rawModules = import.meta.glob('/content/blog/*.mdx', { eager: true, query: '?raw', import: 'default' });
 
 const normalizeExcerpt = (value, content) => {
   if (value) return value.trim();
@@ -26,48 +25,16 @@ const normalizeExcerpt = (value, content) => {
   return cleaned.slice(0, 180) + (cleaned.length > 180 ? '...' : '');
 };
 
-const normalizeRawPath = (path) => path.replace(/\?raw.*$/, '');
-
-const resolveRawValue = (rawValue) => {
-  if (typeof rawValue === 'string') return rawValue;
-  if (typeof rawValue?.default === 'string') return rawValue.default;
-  return '';
-};
-
-const rawEntries = Object.entries(rawModules).map(([path, rawValue]) => {
-  const raw = resolveRawValue(rawValue);
-  return [normalizeRawPath(path), raw];
-});
-
-const rawQueryEntries = Object.entries(rawModulesQuery).map(([path, rawValue]) => {
-  const raw = resolveRawValue(rawValue);
-  return [normalizeRawPath(path), raw];
-});
-
-const rawByPath = rawEntries.reduce((acc, [path, raw]) => {
-  const normalized = path.replace(/\?raw$/, '');
-  acc[normalized] = raw;
+const rawByPath = Object.entries(rawModules).reduce((acc, [path, raw]) => {
+  acc[path] = typeof raw === 'string' ? raw : '';
   return acc;
 }, {});
 
-rawQueryEntries.forEach(([path, raw]) => {
-  if (!rawByPath[path]) {
-    rawByPath[path] = raw;
-  }
-});
-
-const rawBySlug = rawEntries.reduce((acc, [path, raw]) => {
-  const slug = path.split('/').pop().replace(/\.mdx(\?.*)?$/, '');
-  acc[slug] = raw;
+const rawBySlug = Object.entries(rawModules).reduce((acc, [path, raw]) => {
+  const slug = path.split('/').pop().replace(/\.mdx$/, '');
+  acc[slug] = typeof raw === 'string' ? raw : '';
   return acc;
 }, {});
-
-rawQueryEntries.forEach(([path, raw]) => {
-  const slug = path.split('/').pop().replace(/\.mdx(\?.*)?$/, '');
-  if (!rawBySlug[slug]) {
-    rawBySlug[slug] = raw;
-  }
-});
 
 export const blogPosts = Object.keys(postModules)
   .map((path) => {

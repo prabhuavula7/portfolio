@@ -138,13 +138,15 @@ const Skills = () => {
   };
 
   return (
-    <section id="skills" className="py-20 bg-section-light dark:bg-section-dark">
-      <div className="container mx-auto px-4">
+    <section id="skills" className="py-20 bg-section-light dark:bg-section-dark relative overflow-hidden">
+      <div className="orb orb-accent orb-c" style={{ width: 380, height: 380, top: '-60px', right: '-60px' }} aria-hidden="true" />
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-heading mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-heading mb-2 reveal">
             Tech Stack
           </h2>
-          <p className="text-xl text-content max-w-3xl mx-auto">
+          <div className="section-heading-line reveal" />
+          <p className="text-xl text-content max-w-3xl mx-auto mt-4 reveal reveal-d2">
             A comprehensive toolkit for building intelligent systems and modern applications
           </p>
         </div>

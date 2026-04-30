@@ -10,7 +10,7 @@ import {
   Contact,
   BlogPreview
 } from '../components';
-import { useIntroAnimation, useThreeJSBackground } from '../hooks';
+import { useIntroAnimation, useThreeJSBackground, useScrollReveal } from '../hooks';
 import { scrollToSection } from '../utils/scrollUtils';
 import { useLocation } from 'react-router-dom';
 
@@ -19,6 +19,7 @@ const Home = ({ scrollToSection: handleScrollToSection }) => {
   const location = useLocation();
 
   useIntroAnimation();
+  useScrollReveal();
 
   useEffect(() => {
     if (!location.hash) return;

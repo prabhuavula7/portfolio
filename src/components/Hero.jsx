@@ -6,9 +6,14 @@ const Hero = ({ threeJsCanvasRef, scrollToSection }) => {
   };
 
   return (
-    <section id="home" className="relative bg-section-dark flex items-center justify-center min-h-screen pt-20 overflow-x-hidden">
+    <section id="home" className="relative bg-section-dark flex items-center justify-center min-h-screen pt-20 overflow-hidden">
       {/* Three.js Canvas */}
       <canvas ref={threeJsCanvasRef} id="threejs-canvas"></canvas>
+
+      {/* CSS gradient blobs — visible whether or not Three.js loads */}
+      <div className="hero-blob hero-blob-1" aria-hidden="true" />
+      <div className="hero-blob hero-blob-2" aria-hidden="true" />
+      <div className="hero-blob hero-blob-3" aria-hidden="true" />
 
       <div className="container mx-auto px-6 py-12 text-center relative z-10 hero-content">
         {/* Text with shaded orange/red gradient and depth */}
