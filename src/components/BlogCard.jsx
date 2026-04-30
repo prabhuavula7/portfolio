@@ -15,7 +15,7 @@ const BlogCard = ({ post, showExcerpt = true }) => {
   const dateLabel = formatDate(post.date);
 
   return (
-    <article className="glass-card overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+    <article className="glass-card h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex flex-col">
       <div className="relative w-full h-48 overflow-hidden">
         <img
           src={post.cover}
@@ -25,7 +25,7 @@ const BlogCard = ({ post, showExcerpt = true }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-black/0" />
       </div>
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-1">
         <div className="flex items-center gap-4 text-xs text-content mb-3">
           {dateLabel && <span>{dateLabel}</span>}
           {post.readTime && (
@@ -43,7 +43,7 @@ const BlogCard = ({ post, showExcerpt = true }) => {
             {post.excerpt}
           </p>
         )}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-auto pt-2">
           <span className="text-primary font-semibold">Read article</span>
           <Link
             to={`/blog/${post.slug}`}

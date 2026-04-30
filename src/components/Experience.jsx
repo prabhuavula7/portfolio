@@ -121,7 +121,7 @@ const Experience = () => {
         <div className="grid grid-cols-1 md:[grid-template-columns:300px_minmax(0,1fr)] gap-8 items-stretch">
           {/* Left: company list with subtle vertical line */}
           <div className="relative md:sticky md:top-24">
-            <div className="absolute left-8 top-4 bottom-4 w-px bg-gray-200 dark:bg-gray-700" />
+            <div className="absolute left-8 top-4 bottom-4 w-px" style={{ backgroundColor: 'var(--border)' }} />
 
             <ul ref={listRef} className="space-y-6 pl-12">
               {experiences.map((exp, idx) => {
@@ -134,7 +134,7 @@ const Experience = () => {
                       aria-current={active ? 'true' : undefined}
                     >
                       <div className={`relative flex-shrink-0`}> 
-                        <span className={`block w-4 h-4 rounded-full ${active ? 'bg-accent shadow-lg ring-4 ring-accent/20' : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600'}`} />
+                        <span className={`block w-4 h-4 rounded-full ${active ? 'bg-accent shadow-lg ring-4 ring-accent/20' : 'border'}`} style={!active ? { backgroundColor: 'var(--surface-raised)', borderColor: 'var(--border)' } : {}} />
                       </div>
 
                       <div className="flex flex-col">
@@ -156,7 +156,7 @@ const Experience = () => {
                 <div className="glass-card p-6 rounded-3xl shadow-xl h-full flex flex-col">
                   {/* header */}
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 p-2 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-2xl p-2 flex items-center justify-center" style={{ backgroundColor: 'var(--surface-raised)' }}>
                       <img src={logoFor(exp.company)} alt={`${exp.company} logo`} className="w-full h-full object-contain rounded" />
                     </div>
                     <div className="flex-1">

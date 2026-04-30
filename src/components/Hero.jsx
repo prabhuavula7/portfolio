@@ -6,45 +6,43 @@ const Hero = ({ threeJsCanvasRef, scrollToSection }) => {
   };
 
   return (
-    <section id="home" className="relative bg-section-dark flex items-center justify-center min-h-screen pt-20 overflow-hidden">
-      {/* Three.js Canvas */}
-      <canvas ref={threeJsCanvasRef} id="threejs-canvas"></canvas>
-
-      {/* CSS gradient blobs — visible whether or not Three.js loads */}
-      <div className="hero-blob hero-blob-1" aria-hidden="true" />
-      <div className="hero-blob hero-blob-2" aria-hidden="true" />
-      <div className="hero-blob hero-blob-3" aria-hidden="true" />
+    <section id="home" className="relative flex items-center justify-center min-h-[calc(100vh-5rem)] overflow-hidden">
+      {/* Three.js canvas */}
+      <canvas ref={threeJsCanvasRef} id="threejs-canvas" className="absolute inset-0 w-full h-full pointer-events-none z-0" />
 
       <div className="container mx-auto px-6 py-12 text-center relative z-10 hero-content">
-        {/* Text with shaded orange/red gradient and depth */}
-        <h1 
-          className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 intro-text drop-shadow-2xl"
-          style={{ 
-            color: 'var(--text-primary)',
-            textShadow: '2px 2px 8px rgba(139, 69, 19, 0.8), 0 0 20px rgba(139, 69, 19, 0.4), 0 0 40px rgba(255, 255, 255, 0.3)' 
+        <h1
+          className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 intro-text"
+          style={{
+            background: 'linear-gradient(160deg, var(--text-primary) 35%, var(--primary) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
           }}
         >
           <span>Hey,</span> <span>I'm</span> <span>Prabhu</span> <span>Kiran</span> <span>Avula,</span> <br className="hidden md:block" />
           <span>a</span> <span>Full Stack Developer and AI/ML Enthusiast</span>
         </h1>
-        
-        <p className="text-lg md:text-xl max-w-3xl mx-auto mb-10 opacity-0 animate-fade-in delay-2000 font-medium drop-shadow-lg"
-           style={{ color: 'var(--text-primary)' }}>
-          I build intelligent systems that learn, adapt, and deliver value. <br className="hidden md:block" /> 
+
+        <p
+          className="text-lg md:text-xl max-w-3xl mx-auto mb-10 opacity-0 animate-fade-in delay-2000 font-medium"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          I build intelligent systems that learn, adapt, and deliver value. <br className="hidden md:block" />
           From models to products — I turn complexity into clarity.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 opacity-0 animate-fade-in delay-2500">
-          <a 
-            href="#projects" 
-            onClick={() => handleNavClick('projects')} 
+          <a
+            href="#projects"
+            onClick={() => handleNavClick('projects')}
             className="btn-primary"
           >
             View My Work
           </a>
-          <a 
-            href="#contact" 
-            onClick={() => handleNavClick('contact')} 
+          <a
+            href="#contact"
+            onClick={() => handleNavClick('contact')}
             className="btn-secondary"
           >
             Get In Touch

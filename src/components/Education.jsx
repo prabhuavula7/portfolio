@@ -70,7 +70,7 @@ const Education = () => {
             <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
               
               {/* Institution Logo */}
-              <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden bg-white dark:bg-gray-800 flex-shrink-0">
+              <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0" style={{ backgroundColor: 'var(--surface-raised)' }}>
                 <img
                   src={`/logos/${educationData[currentIndex].logo}`}
                   alt={`${educationData[currentIndex].institution} logo`}
@@ -115,7 +115,7 @@ const Education = () => {
                   <ul className="space-y-2">
                     {educationData[currentIndex].achievements.map((achievement, index) => (
                       <li key={index} className="flex items-start text-content text-sm">
-                        <span className="w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0 bg-black dark:bg-white"></span>
+                        <span className="w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0" style={{ backgroundColor: 'var(--primary)' }}></span>
                         <span>{achievement}</span>
                       </li>
                     ))}
@@ -137,13 +137,11 @@ const Education = () => {
                           e.target.style.setProperty('background-color', 'var(--primary)', 'important');
                           e.target.style.setProperty('color', 'white', 'important');
                           e.target.style.setProperty('border-color', 'var(--primary)', 'important');
-                          e.target.style.setProperty('box-shadow', '0 10px 25px rgba(139, 69, 19, 0.3)', 'important');
                         }}
                         onMouseLeave={(e) => {
                           e.target.style.removeProperty('background-color');
                           e.target.style.removeProperty('color');
                           e.target.style.removeProperty('border-color');
-                          e.target.style.removeProperty('box-shadow');
                         }}
                       >
                         {tech}
@@ -158,18 +156,20 @@ const Education = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-amber-50 dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 z-10 group border border-gray-200 dark:border-gray-600 hover:border-amber-300 dark:hover:border-accent"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 z-10 group"
+            style={{ backgroundColor: 'var(--surface-raised)', border: '1px solid var(--border)' }}
           >
-            <svg className="w-6 h-6 text-gray-700 dark:text-primary group-hover:text-amber-700 dark:group-hover:text-accent transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 transition-colors duration-300" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-amber-50 dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 z-10 group border border-gray-200 dark:border-gray-600 hover:border-amber-300 dark:hover:border-accent"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 z-10 group"
+            style={{ backgroundColor: 'var(--surface-raised)', border: '1px solid var(--border)' }}
           >
-            <svg className="w-6 h-6 text-gray-700 dark:text-primary group-hover:text-amber-700 dark:group-hover:text-accent transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 transition-colors duration-300" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

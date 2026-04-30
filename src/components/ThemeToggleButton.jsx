@@ -1,17 +1,19 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 
-const ThemeToggleButton = ({ theme, setTheme }) => {
+const ThemeToggleButton = ({ theme, setTheme, variant = 'default' }) => {
+  const isBare = variant === 'bare';
+
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="glass-button p-2 rounded-lg transition-all duration-300 hover:scale-110"
+      className={isBare ? 'theme-toggle-bare' : 'glass-button p-2 rounded-lg transition-all duration-300 hover:scale-110'}
       aria-label="Toggle Theme"
     >
       {theme === 'dark' ? (
-        <Sun className="w-5 h-5 text-yellow-400" />
+        <Sun className={isBare ? 'w-5 h-5' : 'w-5 h-5 text-yellow-400'} />
       ) : (
-        <Moon className="w-5 h-5 text-primary" />
+        <Moon className={isBare ? 'w-5 h-5' : 'w-5 h-5 text-primary'} />
       )}
     </button>
   );

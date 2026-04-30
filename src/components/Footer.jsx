@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="w-full text-center py-6 bg-white text-black dark:bg-black dark:text-white transition-all">
+    <footer className="w-full text-center py-6 transition-all" style={{ color: 'var(--text-secondary)' }}>
       <div className="container mx-auto px-6">
         <p className="mb-4 text-sm">
           &copy; {new Date().getFullYear()} Prabhu Kiran Avula. All rights reserved.
@@ -13,7 +13,8 @@ const Footer = () => {
             href="mailto:prabhuavula7@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-orange-500 dark:hover:text-orange-400"
+            className="transition-colors hover:text-primary"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <FaEnvelope className="w-6 h-6" />
           </a>
@@ -21,7 +22,8 @@ const Footer = () => {
             href="https://github.com/prabhuavula7"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-orange-500 dark:hover:text-orange-400"
+            className="transition-colors hover:text-primary"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <FaGithub className="w-6 h-6" />
           </a>
@@ -29,7 +31,8 @@ const Footer = () => {
             href="https://linkedin.com/in/prabhuavula"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-orange-500 dark:hover:text-orange-400"
+            className="transition-colors hover:text-primary"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <FaLinkedin className="w-6 h-6" />
           </a>

@@ -100,3 +100,13 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# Claude Code / AI tooling
+CLAUDE.md
+AGENTS.md
+agents.md
+.claude/
+.gstack/
+
+# Local Vercel project metadata
+.vercel/

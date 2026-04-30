@@ -48,7 +48,7 @@ const BlogPost = () => {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       setCopied(false);
     }
   };

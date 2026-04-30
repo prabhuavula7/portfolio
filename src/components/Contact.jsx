@@ -46,7 +46,7 @@ const Contact = () => {
       } else {
         throw new Error('Failed to send message');
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('Failed to send message. Please try again or email me directly at prabhuavula7@gmail.com');
       setTimeout(() => setSubmitStatus(''), 8000);
     } finally {
@@ -55,13 +55,13 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-16 md:py-24 bg-section-light dark:bg-section-dark transition-colors duration-300">
+    <section id="contact" className="py-16 md:py-24 transition-colors duration-300">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-bold text-center mb-12 text-heading">Get In Touch</h2>
 
         <div className="max-w-4xl mx-auto">
           {/* Mac-style window */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="rounded-3xl overflow-hidden" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
             {/* Window title bar */}
             <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-6 py-4 flex items-center space-x-3 border-b border-gray-700/50">
               <div className="flex space-x-3">
@@ -76,7 +76,7 @@ const Contact = () => {
             </div>
             
             {/* Form content */}
-            <div className="p-8 md:p-12 bg-white dark:bg-gray-950">
+            <div className="p-8 md:p-12" style={{ backgroundColor: 'var(--surface)' }}>
               <p className="text-center text-lg text-content mb-8 font-medium">
                 Have a question, a project in mind, or just want to say hello? Feel free to reach out!
               </p>

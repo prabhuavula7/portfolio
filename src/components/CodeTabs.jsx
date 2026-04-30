@@ -24,7 +24,7 @@ const CodeTabs = ({ tabs = [] }) => {
         return hljs.highlightAuto(activeTab.code).value;
       }
       return hljs.highlight(activeTab.code, { language }).value;
-    } catch (error) {
+    } catch {
       return hljs.highlightAuto(activeTab.code).value;
     }
   }, [activeTab]);

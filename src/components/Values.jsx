@@ -19,8 +19,8 @@ const Values = () => {
       desc: "Bias isn't just a technical issue, it's a responsibility. I prioritize fairness, transparency, and integrity at every stage of the project lifecycle.",
     },
     {
-      title: "End-to-End Mindset",
-      desc: "Whether it's raw data wrangling or deployment in production, I think holistically. Connecting dots across the stack to deliver cohesive solutions.",
+      title: "Ownership Mentality",
+      desc: "I treat the product, user, and outcome like they are mine. I close loops, make tradeoffs explicit, and stay accountable after launch.",
     },
     {
       title: "Keep It Real",
@@ -45,8 +45,8 @@ const Values = () => {
               className={`glass-card p-6 rounded-2xl hover-float group container-glow reveal reveal-scale reveal-d${(index % 6) + 1}`}
             >
               <div className="flex flex-col items-center text-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-4 flex-shrink-0">
-                  <span className="text-white text-xl font-bold">{index + 1}</span>
+                <div className="value-number w-12 h-12 rounded-xl flex items-center justify-center mb-4 flex-shrink-0">
+                  <span className="text-xl font-bold">{index + 1}</span>
                 </div>
                 <h3 className="text-xl font-semibold text-heading group-hover:text-accent transition-colors duration-300 text-center">
                   {value.title}

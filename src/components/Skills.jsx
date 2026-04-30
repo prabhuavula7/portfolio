@@ -10,6 +10,11 @@ const Skills = () => {
       id: 'ai-ml',
       name: 'AI & Machine Learning',
       skills: [
+        { name: 'OpenAI', logo: '/logos/openai.png' },
+        { name: 'Claude', logo: '/logos/claude.png' },
+        { name: 'Gemini', logo: '/logos/gemini.png' },
+        { name: 'ElevenLabs', logo: '/logos/elevenlabs.png' },
+        { name: 'Replicate', logo: '/logos/replicate.jpeg' },
         { name: 'TensorFlow', logo: '/logos/tensorflow.svg' },
         { name: 'PyTorch', logo: '/logos/pytorch.svg' },
         { name: 'Pandas', logo: '/logos/pandas.svg' },
@@ -39,6 +44,7 @@ const Skills = () => {
         { name: 'Python', logo: '/logos/python.svg' },
         { name: 'Node.js', logo: '/logos/nodejs.svg' },
         { name: 'Express.js', logo: '/logos/express.svg' },
+        { name: 'Supabase', logo: '/logos/supabase.jpeg' },
         { name: 'MongoDB', logo: '/logos/mongodb.svg' },
         { name: 'MySQL', logo: '/logos/mysql.svg' },
         { name: 'Redis', logo: '/logos/redis.svg' },
@@ -51,6 +57,7 @@ const Skills = () => {
       id: 'tools',
       name: 'Tools & Platforms',
       skills: [
+        { name: 'Cursor', logo: '/logos/cursor.jpeg' },
         { name: 'VS Code', logo: '/logos/vscode.svg' },
         { name: 'n8n', logo: '/logos/n8n.svg' },
         { name: 'Tableau', logo: '/logos/tableau.svg' },
@@ -82,9 +89,10 @@ const Skills = () => {
   // Prioritize common techs for the overview
   const prioritize = (list) => {
     const priority = [
-      'React','JavaScript','TypeScript','Python','Node.js','Next.js','AWS','Azure','GCP',
-      'Docker','Kubernetes','Stripe','Auth0','Datadog','MongoDB','Postman','GitHub',
-      'TensorFlow','PyTorch','Scikit-learn','Pandas','NumPy','Jupyter'
+      'React','JavaScript','TypeScript','Python','Node.js','Next.js','OpenAI','Claude',
+      'Gemini','Supabase','AWS','Azure','GCP','Docker','Stripe','Auth0','Datadog',
+      'MongoDB','Postman','GitHub','Cursor','TensorFlow','PyTorch','Scikit-learn',
+      'Pandas','NumPy','Jupyter','ElevenLabs','Replicate'
     ];
 
     const idx = (name) => {
@@ -105,14 +113,17 @@ const Skills = () => {
     ? prioritize(filteredSkills)
     : filteredSkills;
 
-  // Function to render skill logo or fallback
   const renderSkillLogo = (skill) => {
+    if (skill.name === 'GitHub') {
+      return (
+        <div className="w-12 h-12 flex items-center justify-center" title={skill.name} aria-label={skill.name}>
+          <span className="github-mark w-10 h-10" aria-hidden="true" />
+        </div>
+      );
+    }
+
     return (
-      <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center p-1 bg-white/0 dark:bg-white/5"
-        title={skill.name}
-        aria-label={skill.name}
-      >
+      <div className="w-12 h-12 flex items-center justify-center" title={skill.name} aria-label={skill.name}>
         <img
           src={skill.logo}
           alt={`${skill.name} logo`}
@@ -155,7 +166,7 @@ const Skills = () => {
         <div className="glass-card p-8 rounded-3xl max-w-6xl mx-auto">
           
           {/* Panel Header with Category Tabs */}
-          <div className="border-b border-gray-200 dark:border-gray-600 bg-gradient-to-r from-primary/5 to-accent/5">
+          <div className="bg-gradient-to-r from-primary/5 to-accent/5" style={{ borderBottom: '1px solid var(--border)' }}>
             <div className="flex flex-wrap justify-center gap-2 p-6">
               <button
                 onClick={() => { setActiveCategory('all'); setShowAll(false); setFilterText(''); }}
@@ -195,38 +206,36 @@ const Skills = () => {
             />
           </div>
           
-          {/* Panel Content - Skills Grid */}
+          {/* Panel Content - Logo Wall */}
           <div className="p-8">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-x-4 gap-y-8">
               {(() => {
-                const limit = 12;
+                const limit = 20;
                 const listToShow = (!showAll && displaySkills.length > limit) ? displaySkills.slice(0, limit) : displaySkills;
 
-                return listToShow.map((skill, index) => (
+                return listToShow.map((skill) => (
                   <div
                     key={`${skill.category}-${skill.name}`}
-                    className="skill-card p-6 rounded-2xl text-center transition-all duration-300 hover:scale-105 bg-white dark:bg-slate-600/30 dark:backdrop-blur-xl backdrop-saturate-150 border border-gray-200 dark:border-slate-500/40"
-                    title={skill.name}
+                    className="flex flex-col items-center gap-2 group cursor-default"
                     tabIndex={0}
-                    role="button"
                     aria-label={skill.name}
                   >
-                    {/* Skill Logo */}
-                    <div className="mb-4 flex justify-center">
+                    <div className="w-12 h-12 flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-1">
                       {renderSkillLogo(skill)}
                     </div>
-
-                    {/* Skill Name */}
-                    <h3 className="text-sm font-semibold text-heading">
+                    <span
+                      className="text-xs font-medium text-center leading-tight transition-opacity duration-150 group-hover:opacity-100"
+                      style={{ color: 'var(--text-secondary)', opacity: 0.55 }}
+                    >
                       {skill.name}
-                    </h3>
+                    </span>
                   </div>
                 ));
               })()}
             </div>
 
-            {/* Show More / Show Less for long lists (mobile friendly) */}
-            {filteredSkills.length > 12 && (
+            {/* Show More / Show Less */}
+            {filteredSkills.length > 20 && (
               <div className="mt-6 text-center">
                 <button
                   onClick={() => setShowAll(prev => !prev)}

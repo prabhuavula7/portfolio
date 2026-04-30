@@ -1,8 +1,7 @@
 import React from 'react';
 
-const Projects = () => {
-  const featuredProjects = [
-    {
+const FEATURED_PROJECTS = [
+  {
       id: 1,
       title: "Sana - Your Empathetic AI Companion",
       field: "AI/ML",
@@ -36,7 +35,7 @@ const Projects = () => {
       field: "AI/ML",
       description: "AI-powered project scoping automation that converts client intake conversations into structured scope documents — cutting scoping time from 20–30 hours to 45 minutes.",
       technologies: [
-        { name: 'Claude', logo: '/logos/anthropic.png' },
+        { name: 'Claude', logo: '/logos/claude.png' },
         { name: 'Next.js', logo: '/logos/nextjs.svg' },
         { name: 'Supabase', logo: '/logos/supabase.jpeg' },
         { name: 'Stripe', logo: '/logos/stripe.png' },
@@ -72,8 +71,12 @@ const Projects = () => {
       achievements: ["Interactive geography quizzes", "AI-powered hints", "Global knowledge testing"],
       github: "https://github.com/prabhuavula7/geopersona",
       liveLink: "https://geopersona.vercel.app"
-    }
-  ];
+  }
+];
+
+const PROJECT_COUNT = FEATURED_PROJECTS.length;
+
+const Projects = () => {
 
   const [currentProjectIndex, setCurrentProjectIndex] = React.useState(0);
   const [scrollThreshold, setScrollThreshold] = React.useState(0);
@@ -82,27 +85,27 @@ const Projects = () => {
   // Auto-shift every 10 seconds
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentProjectIndex((prev) => (prev + 1) % featuredProjects.length);
+      setCurrentProjectIndex((prev) => (prev + 1) % PROJECT_COUNT);
     }, 10000);
 
     return () => clearInterval(interval);
   }, []);
 
   // Horizontal navigation with arrow keys and mouse wheel
-  const handleKeyDown = (e) => {
+  const handleKeyDown = React.useCallback((e) => {
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
       setCurrentProjectIndex((prev) => 
-        prev === 0 ? featuredProjects.length - 1 : prev - 1
+        prev === 0 ? PROJECT_COUNT - 1 : prev - 1
       );
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      setCurrentProjectIndex((prev) => (prev + 1) % featuredProjects.length);
+      setCurrentProjectIndex((prev) => (prev + 1) % PROJECT_COUNT);
     }
-  };
+  }, []);
 
   // Mouse wheel for horizontal navigation (accumulate scroll for sensitivity control)
-  const handleWheel = (e) => {
+  const handleWheel = React.useCallback((e) => {
     e.preventDefault();
     
     // Add to scroll threshold
@@ -113,11 +116,11 @@ const Projects = () => {
     if (newThreshold >= 80) {
       if (e.deltaY > 0) {
         // Scroll down = go right (next project)
-        setCurrentProjectIndex((prev) => (prev + 1) % featuredProjects.length);
+        setCurrentProjectIndex((prev) => (prev + 1) % PROJECT_COUNT);
       } else {
         // Scroll up = go left (previous project)
         setCurrentProjectIndex((prev) => 
-          prev === 0 ? featuredProjects.length - 1 : prev - 1
+          prev === 0 ? PROJECT_COUNT - 1 : prev - 1
         );
       }
       
@@ -132,21 +135,21 @@ const Projects = () => {
         setScrollThreshold(0);
       }, 1500);
     }
-  };
+  }, [scrollThreshold]);
 
   // Touch/swipe support for mobile
   const [touchStart, setTouchStart] = React.useState(null);
   const [touchEnd, setTouchEnd] = React.useState(null);
 
-  const handleTouchStart = (e) => {
+  const handleTouchStart = React.useCallback((e) => {
     setTouchStart(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = React.useCallback((e) => {
     setTouchEnd(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = React.useCallback(() => {
     if (!touchStart || !touchEnd) return;
     
     const distance = touchStart - touchEnd;
@@ -155,17 +158,17 @@ const Projects = () => {
 
     if (isLeftSwipe) {
       // Swipe left = next project
-      setCurrentProjectIndex((prev) => (prev + 1) % featuredProjects.length);
+      setCurrentProjectIndex((prev) => (prev + 1) % PROJECT_COUNT);
     } else if (isRightSwipe) {
       // Swipe right = previous project
       setCurrentProjectIndex((prev) => 
-        prev === 0 ? featuredProjects.length - 1 : prev - 1
+        prev === 0 ? PROJECT_COUNT - 1 : prev - 1
       );
     }
 
     setTouchStart(null);
     setTouchEnd(null);
-  };
+  }, [touchStart, touchEnd]);
 
   // Cleanup timeout on unmount
   React.useEffect(() => {
@@ -199,7 +202,7 @@ const Projects = () => {
         document.removeEventListener('keydown', handleKeyDown);
       };
     }
-  }, [scrollThreshold, touchStart, touchEnd]);
+  }, [handleKeyDown, handleTouchEnd, handleTouchMove, handleTouchStart, handleWheel]);
 
 
   return (
@@ -221,7 +224,7 @@ const Projects = () => {
           {/* Project Card */}
           <div className="glass-card p-8 rounded-3xl transition-all duration-500 mb-8 container-glow">
             {(() => {
-              const project = featuredProjects[currentProjectIndex];
+              const project = FEATURED_PROJECTS[currentProjectIndex];
               return (
                 <>
                   {/* Project Header */}
@@ -259,7 +262,7 @@ const Projects = () => {
                     <div className="flex gap-4">
                       {project.technologies.map((tech, index) => (
                         <div key={index} className="flex flex-col items-center">
-                          <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-lg p-2 mb-2">
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center p-2 mb-2" style={{ backgroundColor: 'var(--surface-raised)' }}>
                             <img
                               src={tech.logo}
                               alt={`${tech.name} logo`}
@@ -278,7 +281,7 @@ const Projects = () => {
                     <ul className="space-y-2">
                       {project.achievements.map((achievement, index) => (
                         <li key={index} className="flex items-start text-content text-base">
-                          <span className="w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0 bg-black dark:bg-white"></span>
+                          <span className="w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0" style={{ backgroundColor: 'var(--primary)' }}></span>
                           {achievement}
                         </li>
                       ))}
@@ -316,7 +319,8 @@ const Projects = () => {
                         href={project.liveLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center bg-accent hover:bg-accent/80 text-white transition-all duration-300 text-lg font-medium px-6 py-3 rounded-xl hover:scale-105 hover:shadow-lg"
+                        className="inline-flex items-center justify-center transition-all duration-300 text-lg font-medium px-6 py-3 rounded-xl hover:scale-105"
+                        style={{ backgroundColor: 'var(--accent)', color: 'var(--background)' }}
                       >
                         <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -345,38 +349,18 @@ const Projects = () => {
           </div>
         </div>
 
-        {/* Additional Projects & GitHub Section */}
-        <div className="text-center">
-          <div className="glass-card p-8 rounded-3xl max-w-4xl mx-auto container-glow">
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-lg mb-4">
-                <img
-                  src="/logos/github.svg"
-                  alt="GitHub"
-                  className="w-10 h-10"
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-heading mb-3">
-                Want to See More?
-              </h3>
-              <p className="text-content leading-relaxed text-lg mb-6 max-w-2xl">
-                These are just a few highlights from my portfolio. I have many more projects 
-                covering other fascinating fields. Check out my GitHub 
-                profile to explore all my work!
-              </p>
-              <a
-                href="https://github.com/prabhuavula7"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-button bg-gradient-to-r from-primary to-accent text-white px-8 py-4 rounded-2xl font-semibold hover:scale-105 transition-all duration-300 inline-flex items-center"
-              >
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
-                </svg>
-                Visit My GitHub Profile
-              </a>
-            </div>
-          </div>
+        {/* Additional Projects */}
+        <div className="mt-10 text-center">
+          <a
+            href="https://github.com/prabhuavula7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="github-outro inline-flex items-center justify-center gap-3 text-lg font-semibold transition-all duration-300"
+            aria-label="View more projects on GitHub"
+          >
+            <span className="github-mark w-8 h-8" aria-hidden="true" />
+            <span>More projects on GitHub</span>
+          </a>
         </div>
       </div>
     </section>

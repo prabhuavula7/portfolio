@@ -8,246 +8,265 @@ export const useThreeJSBackground = () => {
     const canvas = threeJsCanvasRef.current;
     if (!canvas) return;
 
+    let animId;
     let renderer;
+
     try {
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+      const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setClearColor(0x000000, 0);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+      camera.position.z = 8;
 
-    camera.position.z = 8;
-
-    // Create floating geometric shapes
-    const shapes = [];
-    const geometries = [
-      new THREE.TorusGeometry(1, 0.3, 16, 100),
-      new THREE.OctahedronGeometry(0.8),
-      new THREE.TetrahedronGeometry(1),
-      new THREE.IcosahedronGeometry(0.6)
-    ];
-
-    const materials = [
-      new THREE.MeshPhongMaterial({ 
-        color: 0x8B4513, 
-        transparent: true, 
-        opacity: 0.7,
-        wireframe: true
-      }),
-      new THREE.MeshPhongMaterial({ 
-        color: 0xCD5C5C, 
-        transparent: true, 
-        opacity: 0.6,
-        wireframe: true
-      }),
-      new THREE.MeshPhongMaterial({ 
-        color: 0xA0522D, 
-        transparent: true, 
-        opacity: 0.8,
-        wireframe: true
-      }),
-      new THREE.MeshPhongMaterial({ 
-        color: 0xDC143C, 
-        transparent: true, 
-        opacity: 0.5,
-        wireframe: true
-      })
-    ];
-
-    // Create multiple floating shapes
-    for (let i = 0; i < 8; i++) {
-      const geometry = geometries[i % geometries.length];
-      const material = materials[i % materials.length];
-      const mesh = new THREE.Mesh(geometry, material);
-      
-      mesh.position.set(
-        (Math.random() - 0.5) * 15,
-        (Math.random() - 0.5) * 10,
-        (Math.random() - 0.5) * 10
-      );
-      
-      mesh.rotation.set(
-        Math.random() * Math.PI,
-        Math.random() * Math.PI,
-        Math.random() * Math.PI
-      );
-      
-      mesh.userData = {
-        rotationSpeed: {
-          x: (Math.random() - 0.5) * 0.02,
-          y: (Math.random() - 0.5) * 0.02,
-          z: (Math.random() - 0.5) * 0.02
-        },
-        floatSpeed: Math.random() * 0.01 + 0.005,
-        floatOffset: Math.random() * Math.PI * 2
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const metrics = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        xRange: 7,
+        yRange: 4.5,
       };
-      
-      shapes.push(mesh);
-      scene.add(mesh);
-    }
 
-    // Add ambient and directional lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-    scene.add(ambientLight);
-    
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1).normalize();
-    scene.add(directionalLight);
+      const geometries = [
+        new THREE.TorusGeometry(1, 0.3, 16, 100),
+        new THREE.OctahedronGeometry(0.8),
+        new THREE.TetrahedronGeometry(1),
+        new THREE.IcosahedronGeometry(0.6),
+      ];
 
-    // Add point lights for dramatic effect
-    const pointLight1 = new THREE.PointLight(0x8B4513, 1, 20);
-    pointLight1.position.set(5, 5, 5);
-    scene.add(pointLight1);
+      const shapeConfigs = [
+        {
+          geometry: 0,
+          color: 0x8B4513,
+          opacity: 0.62,
+          anchor: [-0.86, 0.38, -1.2],
+          scale: 1.85,
+          mobileScale: 1.12,
+          drift: [0.08, 0.10, 0.30],
+          cursor: 0.42,
+        },
+        {
+          geometry: 1,
+          color: 0xCD5C5C,
+          opacity: 0.50,
+          anchor: [-0.50, -0.40, -2.0],
+          scale: 1.05,
+          mobileScale: 0.72,
+          drift: [0.10, 0.08, 0.34],
+          cursor: -0.32,
+        },
+        {
+          geometry: 2,
+          color: 0xA0522D,
+          opacity: 0.58,
+          anchor: [-0.12, 0.56, -2.6],
+          scale: 0.82,
+          mobileScale: 0.58,
+          drift: [0.06, 0.07, 0.28],
+          cursor: 0.26,
+        },
+        {
+          geometry: 3,
+          color: 0xDC143C,
+          opacity: 0.48,
+          anchor: [0.42, 0.30, -1.8],
+          scale: 1.55,
+          mobileScale: 0.96,
+          drift: [0.08, 0.09, 0.32],
+          cursor: -0.34,
+        },
+        {
+          geometry: 0,
+          color: 0x8B4513,
+          opacity: 0.44,
+          anchor: [0.84, -0.32, -1.5],
+          scale: 1.22,
+          mobileScale: 0.80,
+          drift: [0.07, 0.10, 0.30],
+          cursor: 0.36,
+        },
+        {
+          geometry: 2,
+          color: 0xCD5C5C,
+          opacity: 0.38,
+          anchor: [0.12, -0.58, -2.8],
+          scale: 0.68,
+          mobileScale: 0.48,
+          drift: [0.05, 0.06, 0.24],
+          cursor: -0.20,
+          hideOnMobile: true,
+        },
+      ];
 
-    const pointLight2 = new THREE.PointLight(0xCD5C5C, 1, 20);
-    pointLight2.position.set(-5, -5, 5);
-    scene.add(pointLight2);
-    
-    let mouseX = 0;
-    let mouseY = 0;
-    let targetX = 0;
-    let targetY = 0;
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
-   
-    const onDocumentMouseMove = (event) => {
-      mouseX = (event.clientX - windowHalfX);
-      mouseY = (event.clientY - windowHalfY);
-    };
-    
-    const onDocumentTouchMove = (event) => {
-      if (event.touches.length === 1) {
-        // Remove preventDefault to allow normal scrolling
-        mouseX = (event.touches[0].pageX - windowHalfX);
-        mouseY = (event.touches[0].pageY - windowHalfY);
+      const shapes = [];
+      const pointer = new THREE.Vector2(0, 0);
+      const targetPointer = new THREE.Vector2(0, 0);
+
+      const updateMetrics = () => {
+        const width = canvas.clientWidth || window.innerWidth;
+        const height = canvas.clientHeight || window.innerHeight;
+        const aspect = width / Math.max(height, 1);
+
+        metrics.width = width;
+        metrics.height = height;
+        metrics.xRange = THREE.MathUtils.clamp(aspect * 6.2, 4.8, 9.2);
+        metrics.yRange = width < 768 ? 4.9 : 4.4;
+
+        camera.aspect = aspect;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height, false);
+      };
+
+      const createShape = (config, index) => {
+        if (metrics.width < 640 && config.hideOnMobile) return;
+
+        const material = new THREE.MeshPhongMaterial({
+          color: config.color,
+          transparent: true,
+          opacity: config.opacity,
+          wireframe: true,
+          depthWrite: false,
+        });
+        const mesh = new THREE.Mesh(geometries[config.geometry], material);
+
+        mesh.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        );
+        mesh.userData = {
+          ...config,
+          phase: Math.random() * Math.PI * 2,
+          floatSpeed: 0.18 + index * 0.035 + Math.random() * 0.04,
+          rotationSpeed: new THREE.Vector3(
+            (Math.random() - 0.5) * 0.012,
+            (Math.random() - 0.5) * 0.012,
+            (Math.random() - 0.5) * 0.01
+          ),
+          home: new THREE.Vector3(),
+          driftVector: new THREE.Vector3(),
+          baseScale: 1,
+        };
+
+        shapes.push(mesh);
+        scene.add(mesh);
+      };
+
+      const updateShapeLayout = () => {
+        shapes.forEach((shape) => {
+          const data = shape.userData;
+          data.home.set(
+            data.anchor[0] * metrics.xRange,
+            data.anchor[1] * metrics.yRange,
+            data.anchor[2]
+          );
+          data.driftVector.set(
+            data.drift[0] * metrics.xRange,
+            data.drift[1] * metrics.yRange,
+            data.drift[2]
+          );
+          data.baseScale = metrics.width < 768 ? data.mobileScale : data.scale;
+          shape.position.copy(data.home);
+          shape.scale.setScalar(data.baseScale);
+        });
+      };
+
+      updateMetrics();
+      shapeConfigs.forEach(createShape);
+      updateShapeLayout();
+
+      scene.add(new THREE.AmbientLight(0x404040, 0.65));
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.85);
+      directionalLight.position.set(1, 1, 1).normalize();
+      scene.add(directionalLight);
+
+      const pointLight1 = new THREE.PointLight(0x8B4513, 1, 22);
+      pointLight1.position.set(5, 5, 5);
+      scene.add(pointLight1);
+
+      const pointLight2 = new THREE.PointLight(0xCD5C5C, 1, 22);
+      pointLight2.position.set(-5, -5, 5);
+      scene.add(pointLight2);
+
+      const updatePointer = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = ((clientX - rect.left) / Math.max(rect.width, 1)) * 2 - 1;
+        const y = -(((clientY - rect.top) / Math.max(rect.height, 1)) * 2 - 1);
+        targetPointer.set(
+          THREE.MathUtils.clamp(x, -1, 1),
+          THREE.MathUtils.clamp(y, -1, 1)
+        );
+      };
+
+      const onPointerMove = (event) => updatePointer(event.clientX, event.clientY);
+      const resetPointer = () => targetPointer.set(0, 0);
+      const renderScene = () => renderer.render(scene, camera);
+      const onResize = () => {
+        updateMetrics();
+        updateShapeLayout();
+        if (reducedMotion) renderScene();
+      };
+
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('blur', resetPointer);
+      window.addEventListener('resize', onResize);
+
+      let resizeObserver;
+      if ('ResizeObserver' in window) {
+        resizeObserver = new ResizeObserver(onResize);
+        resizeObserver.observe(canvas);
       }
-    };
-   
-    const onWindowResize = () => {
-      windowHalfX = window.innerWidth / 2;
-      windowHalfY = window.innerHeight / 2;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-    };
 
-    // Add click interaction
-    const onDocumentClick = (event) => {
-      // Remove preventDefault to allow normal page interactions
-      
-      // Calculate mouse position in normalized device coordinates
-      const mouse = new THREE.Vector2();
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      
-      // Raycasting to detect clicked objects
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(mouse, camera);
-      
-      const intersects = raycaster.intersectObjects(shapes);
-      
-      if (intersects.length > 0) {
-        const clickedShape = intersects[0].object;
-        
-        // Add a "clicked" effect
-        clickedShape.userData.clicked = true;
-        clickedShape.userData.clickTime = Date.now();
-        
-        // Change color temporarily
-        const originalColor = clickedShape.material.color.getHex();
-        clickedShape.material.color.setHex(0xFFFFFF);
-        
-        // Reset after animation
-        setTimeout(() => {
-          clickedShape.material.color.setHex(originalColor);
-          clickedShape.userData.clicked = false;
-        }, 500);
-      }
-    };
+      const clock = new THREE.Clock();
 
-    document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
-    document.addEventListener('click', onDocumentClick);
-    window.addEventListener('resize', onWindowResize);
+      const animate = () => {
+        animId = requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
 
-    const animate = () => {
-      requestAnimationFrame(animate);
-      
-              // Smooth camera movement based on mouse - more responsive
-        targetX = mouseX * 0.002; // Increased sensitivity
-        targetY = mouseY * 0.002;
-        camera.position.x += (targetX - camera.position.x) * 0.1; // Faster response
-        camera.position.y += (-targetY - camera.position.y) * 0.1;
+        pointer.lerp(targetPointer, 0.055);
+        camera.position.x += (pointer.x * 0.6 - camera.position.x) * 0.04;
+        camera.position.y += (pointer.y * 0.38 - camera.position.y) * 0.04;
         camera.lookAt(scene.position);
 
-        // Animate shapes with more dynamic movement
-        shapes.forEach((shape, index) => {
-          // Rotate shapes faster
-          shape.rotation.x += shape.userData.rotationSpeed.x * 2;
-          shape.rotation.y += shape.userData.rotationSpeed.y * 2;
-          shape.rotation.z += shape.userData.rotationSpeed.z * 2;
-          
-          // More dynamic floating animation
-          const time = Date.now() * shape.userData.floatSpeed * 2 + shape.userData.floatOffset;
-          shape.position.y += Math.sin(time) * 0.02;
-          
-          // Interactive rotation around center with mouse influence
-          const radius = 4 + index * 0.8;
-          const angle = time * 0.002 + index * 0.5 + (mouseX * 0.0001);
-          shape.position.x = Math.cos(angle) * radius;
-          shape.position.z = Math.sin(angle) * radius;
-          
-                  // Add subtle scale animation based on mouse movement
-        const mouseDistance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
-        const scale = 1 + (mouseDistance * 0.00001);
-        shape.scale.setScalar(scale);
-        
-        // Add hover effect - make shapes glow when mouse is near
-        const mouseWorldPos = new THREE.Vector3(mouseX * 0.01, -mouseY * 0.01, 0);
-        const distanceToMouse = shape.position.distanceTo(mouseWorldPos);
-        
-        if (distanceToMouse < 3) {
-          // Glow effect when mouse is near
-          shape.material.emissive.setHex(0x333333);
-          shape.material.opacity = 1;
-        } else {
-          // Reset when mouse is far
-          shape.material.emissive.setHex(0x000000);
-          shape.material.opacity = 0.7;
-        }
+        shapes.forEach((shape) => {
+          const data = shape.userData;
+          shape.position.set(
+            data.home.x + Math.sin(time * data.floatSpeed + data.phase) * data.driftVector.x + pointer.x * data.cursor,
+            data.home.y + Math.cos(time * data.floatSpeed * 0.9 + data.phase) * data.driftVector.y + pointer.y * data.cursor * 0.58,
+            data.home.z + Math.sin(time * data.floatSpeed * 0.7 + data.phase) * data.driftVector.z
+          );
+
+          shape.rotation.x += data.rotationSpeed.x + pointer.y * 0.0007;
+          shape.rotation.y += data.rotationSpeed.y + pointer.x * 0.0008;
+          shape.rotation.z += data.rotationSpeed.z;
+          shape.scale.setScalar(data.baseScale * (1 + Math.sin(time * data.floatSpeed + data.phase) * 0.025));
         });
 
-              // Animate point lights with mouse influence
-        const time = Date.now() * 0.001;
-        const mouseInfluence = mouseX * 0.0001;
-        
-        pointLight1.position.x = Math.cos(time + mouseInfluence) * 8;
-        pointLight1.position.z = Math.sin(time + mouseInfluence) * 8;
-        pointLight2.position.x = Math.cos(time + Math.PI + mouseInfluence) * 8;
-        pointLight2.position.z = Math.sin(time + Math.PI + mouseInfluence) * 8;
-        
-        // Make lights more dynamic
-        pointLight1.intensity = 1 + Math.sin(time * 2) * 0.3;
-        pointLight2.intensity = 1 + Math.cos(time * 2) * 0.3;
+        pointLight1.position.x = Math.cos(time * 0.25) * 8;
+        pointLight1.position.z = Math.sin(time * 0.25) * 6;
+        pointLight2.position.x = Math.cos(time * 0.22 + Math.PI) * 8;
+        pointLight2.position.z = Math.sin(time * 0.22 + Math.PI) * 6;
 
-      renderer.render(scene, camera);
-    };
+        renderScene();
+      };
 
-    animate();
+      if (reducedMotion) {
+        renderScene();
+      } else {
+        animate();
+      }
 
-    return () => {
-      document.removeEventListener('mousemove', onDocumentMouseMove);
-      document.removeEventListener('touchmove', onDocumentTouchMove);
-      document.removeEventListener('click', onDocumentClick);
-      window.removeEventListener('resize', onWindowResize);
-      shapes.forEach(shape => {
-        shape.geometry.dispose();
-        shape.material.dispose();
-      });
-      renderer.dispose();
-    };
+      return () => {
+        cancelAnimationFrame(animId);
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('blur', resetPointer);
+        window.removeEventListener('resize', onResize);
+        resizeObserver?.disconnect();
+        geometries.forEach((geometry) => geometry.dispose());
+        shapes.forEach((shape) => shape.material.dispose());
+        renderer.dispose();
+      };
     } catch (err) {
       console.warn('Three.js WebGL unavailable, skipping background:', err.message);
     }
