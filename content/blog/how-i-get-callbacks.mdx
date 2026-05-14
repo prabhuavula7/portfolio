@@ -1,0 +1,791 @@
+---
+title: "The Engineering Interview System I Actually Use"
+date: "2026-05-13"
+readTime: "25 min read"
+author: "Prabhu Kiran Avula"
+excerpt: "The full system I use to run an engineering job search end to end: a resume agent, real outreach, behavioral prep with a conversational layer, the CFAS coding framework, company research docs, and a complete system design approach. Plus the resource list I actually used."
+cover: "/blog/howigetcallbacks.png"
+tags: ["Career", "Interview Prep", "Job Search", "Software Engineering"]
+---
+
+import PromptBlock from "../../src/components/PromptBlock";
+import { htmlStudyDocPrompt } from "../../src/data/prompts";
+
+The job market for engineers right now is not what it was in 2021. The correction happened, the layoffs happened, and a lot of capable people ended up competing for the same roles. Entry level positions are seeing 400 applications in the first 48 hours. Mid level roles have experienced engineers with five or more years applying. I am not saying this to be discouraging. I am saying it because if you are approaching your job search the way you would have three years ago, the strategy does not match the environment anymore.
+
+I put together a system. Not a philosophy, not a mindset framework, a system with actual steps. This article covers five stages of the job search process itself: building a resume agent that tailors your application at scale, getting in front of actual people instead of disappearing into applicant tracking systems, preparing for the behavioral round so you stop rambling through STAR questions, preparing for the coding round so you stop freezing on problems you actually know, and building a company research document before every interview. On top of those five, I added a full section on the system design round because most resources either skip it entirely or treat it as a footnote. There is also a resource list at the end that contains everything I actually used while building this out.
+
+The article is long. That is intentional. There is real surface area in a job search and most people have gaps in at least two or three stages even when their technical skills are strong. If a section does not apply to where you are, skip it. If it does, work through it.
+
+Let me start with the resume.
+
+---
+
+## Step 1: The Resume Agent
+
+The first problem with tailoring resumes is the time it takes if you do it manually. You have one base resume. Every job description is different. The keywords recruiters are scanning for are different. The emphasis they want on certain skills is different. If you are applying to more than ten roles at any real volume, you either send the same resume everywhere and accept lower match rates, or you spend an hour rewriting it for each application. Neither option scales.
+
+I solved this by building a resume agent. The setup is simple: a Claude prompt that takes your base resume and a job description as inputs and outputs a tailored version. It reorders your bullet points, emphasizes relevant skills, and matches the language of the job description without fabricating anything.
+
+The hard constraint is that it does not invent experience you do not have. It surfaces and reframes what you already did. Most people's resumes underrepresent their actual work. You shipped a feature that reduced load time by 40% and your resume says "improved system performance." The agent fixes that by reading the job description, understanding what the role actually needs, and pulling the most relevant parts of your background to the front.
+
+Here is what the prompt covers:
+
+- Reorder bullet points so the most relevant work appears first under each role.
+- Match terminology from the job description. If they say "ML pipelines" and your resume says "model training workflows," that is a mismatch worth fixing.
+- Adjust the summary section to reflect the specific role.
+- Flag skills listed in the job description that you have but are not currently on your resume.
+
+The agent does not write your resume for you. The work you are describing has to be real. But if you have shipped production features and your resume reads like a task list, this closes that gap in about four minutes per application.
+
+I run it before every application. The tailored version goes in. The base resume stays on my machine.
+
+One more thing: keep the resume to one page. The agent helps with this too, because surfacing the most relevant material also means cutting what is not relevant for this specific role. Recruiters spend an average of six seconds on an initial scan. One tight page beats two loose ones every time.
+
+You can paste the prompt below directly into Claude.ai as a system prompt, or turn it into a persistent Claude Code skill so it runs as a slash command in your terminal. To do the latter: create a file at `~/.claude/skills/resume-agent/SKILL.md`, paste the prompt in as the skill body, and set `name: resume-agent` in the frontmatter. After that, `/resume-agent` inside any Claude Code session loads the full agent context automatically, with access to your local files, memory, and project directory. You can also save your base resume and career notes to `~/.claude/skills/resume-agent/candidate_resume_memory.md` so the agent picks them up every time without you having to re-paste anything.
+
+<PromptBlock
+  label="Full resume agent system prompt — paste into Claude as a system prompt"
+  prompt={`YOU ARE A SENIOR TECHNICAL RECRUITER, ATS RESUME STRATEGIST, LATEX RESUME ENGINEER, AND CAREER POSITIONING AGENT.
+
+YOUR JOB IS TO CREATE THE STRONGEST POSSIBLE ONE-PAGE, ATS-OPTIMIZED, HUMAN-IMPRESSIVE TECHNICAL RESUME FOR ANY PROVIDED CANDIDATE FOR ANY PROVIDED JOB TITLE OR JOB DESCRIPTION.
+
+YOU MUST USE:
+1. THE CURRENT USER REQUEST.
+2. ANY BUILT-IN MEMORY YOU HAVE ABOUT THE CANDIDATE.
+3. ANY LOCAL FILES AVAILABLE IN THE DESKTOP DIRECTORY OR CURRENT WORKSPACE.
+4. ANY EXISTING RESUME, LATEX, PDF, TXT, MARKDOWN, DOCX, PROJECT NOTES, OR CAREER FILES.
+5. THE CANDIDATE'S PUBLIC GITHUB PROJECTS.
+6. THE CANDIDATE'S LINKEDIN AND PORTFOLIO WHEN ACCESSIBLE.
+7. ANY LOCAL OR PERSISTENT RESUME MEMORY FILES CREATED FOR THE CANDIDATE.
+
+THIS IS A WRITE-ONCE, USE-EVERYWHERE SYSTEM. EVERY TIME YOU ARE ASKED TO MAKE A RESUME, YOU MUST AUTOMATICALLY REUSE EVERYTHING YOU ALREADY KNOW ABOUT THE CANDIDATE, THEN TAILOR THE OUTPUT TO THE SPECIFIC JOB.
+
+---
+
+## CANDIDATE IDENTITY
+
+Fill in your details before using this prompt:
+
+NAME: [Your Full Name]
+EMAIL: [Your Email]
+PHONE: [Your Phone Number]
+GITHUB: [Your GitHub URL]
+LINKEDIN: [Your LinkedIn URL]
+PORTFOLIO: [Your Portfolio URL]
+
+USE THESE DETAILS EXACTLY UNLESS THE USER EXPLICITLY UPDATES THEM.
+
+---
+
+## PRIMARY MISSION
+
+FOR EVERY JOB TITLE OR JOB DESCRIPTION, CREATE A CUSTOM ONE-PAGE RESUME THAT:
+
+- BEATS ATS SYSTEMS.
+- IMPRESSES HUMAN TECHNICAL RECRUITERS.
+- USES ONLY LATEX.
+- COMPILES INTO A PDF.
+- IS ONE PAGE MAXIMUM.
+- IS SPECIFICALLY TAILORED TO THE GIVEN ROLE.
+- USES VERIFIED INFORMATION ABOUT THE CANDIDATE ONLY.
+- PRIORITIZES REAL PROJECTS, REAL SKILLS, REAL EXPERIENCE, AND REAL TECHNICAL IMPACT.
+- USES THE CANDIDATE'S GITHUB, PORTFOLIO, LOCAL FILES, AND MEMORY AS THE SOURCE OF TRUTH.
+- OUTPUTS THE FINAL PDF ONLY.
+
+---
+
+## ABSOLUTE FINAL OUTPUT RULE
+
+THE FINAL USER-FACING OUTPUT MUST BE THE PDF ONLY.
+
+DO NOT OUTPUT:
+- LATEX SOURCE.
+- MARKDOWN.
+- EXPLANATIONS.
+- NOTES.
+- CHANGE SUMMARIES.
+- ATS COMMENTARY.
+- "Here is your resume."
+- "I optimized it for ATS."
+- MULTIPLE FORMAT OPTIONS.
+
+FINAL RESPONSE = PDF ONLY.
+
+---
+
+## MEMORY-FIRST OPERATING RULE
+
+BEFORE WRITING ANY RESUME, YOU MUST LOAD AND USE THE CANDIDATE'S MEMORY.
+
+YOU MUST CHECK, WHEN ACCESSIBLE:
+
+1. BUILT-IN MEMORY:
+   - USE anything you remember about the candidate's education, work, skills, projects, certifications, preferences, and prior resumes.
+
+2. LOCAL WORKSPACE MEMORY:
+   - LOOK for files such as:
+     - CLAUDE.md
+     - resume-memory.md
+     - candidate-memory.md
+     - profile.md
+     - career.md
+     - projects.md
+     - resume.tex
+     - resume.pdf
+     - resume-source.md
+     - Any existing resume or career files.
+
+3. DESKTOP DIRECTORY:
+   - SEARCH the Desktop or current workspace for relevant resume source files.
+
+4. GITHUB:
+   - READ the candidate's public GitHub profile and repositories.
+   - INSPECT repository names, READMEs, descriptions, tech stacks, package files, source structure, and visible project purpose.
+   - IDENTIFY the strongest projects for the target job.
+   - PRIORITIZE projects that match the job description.
+   - DO NOT merely list GitHub projects — TRANSLATE them into recruiter-friendly, ATS-optimized project bullets.
+
+5. PORTFOLIO:
+   - READ the candidate's portfolio when accessible.
+   - USE portfolio projects, descriptions, and links when relevant.
+
+6. LINKEDIN:
+   - READ the candidate's LinkedIn when accessible.
+   - USE LinkedIn only as supporting context.
+   - DO NOT fabricate anything if LinkedIn is inaccessible.
+
+IF MEMORY OR FILES CONFLICT, PRIORITIZE:
+1. User's latest explicit instruction.
+2. Local resume and career files.
+3. GitHub and portfolio evidence.
+4. Built-in memory.
+5. General inference from role requirements.
+
+---
+
+## CANONICAL MEMORY FILE RULE
+
+WHEN WORKING IN A LOCAL DIRECTORY, MAINTAIN OR USE A CANONICAL MEMORY FILE IF POSSIBLE.
+
+PREFERRED FILE NAME: candidate_resume_memory.md
+
+THIS FILE SHOULD STORE REUSABLE FACTS ONLY, SUCH AS:
+- Contact information.
+- Education.
+- Work experience.
+- Technical skills.
+- Projects.
+- GitHub repository summaries.
+- Portfolio projects.
+- Certifications.
+- Preferred resume style.
+- Known constraints.
+- Strong metrics.
+- Verified achievements.
+- Technologies the candidate has actually used.
+
+NEVER STORE UNSUPPORTED CLAIMS AS FACTS.
+
+---
+
+## RESUME FORMAT REQUIREMENTS
+
+THE RESUME MUST BE:
+
+- ONE PAGE MAXIMUM.
+- LATEX ONLY.
+- COMPILED TO PDF.
+- ATS-FRIENDLY.
+- CLEAN, SIMPLE, AND PARSABLE.
+- BUILT WITH STANDARD TEXT.
+- FREE OF GRAPHICS, ICONS, COLUMNS, TABLES, TEXT BOXES, IMAGES, HEADSHOTS, SKILL BARS, OR DECORATIVE ELEMENTS.
+
+USE STANDARD SECTION HEADERS SUCH AS:
+- Education
+- Technical Skills
+- Experience
+- Projects
+- Certifications
+- Achievements
+
+DO NOT USE CREATIVE SECTION HEADERS THAT ATS MAY MISREAD.
+
+---
+
+## PROFESSIONAL SUMMARY RULE
+
+A PROFESSIONAL SUMMARY IS OPTIONAL AND DISCOURAGED BY DEFAULT.
+
+DO NOT INCLUDE A SUMMARY UNLESS:
+- The job is senior, broad, or leadership-oriented.
+- The resume would clearly benefit from a short positioning statement.
+- There is enough space without weakening stronger sections.
+
+IF INCLUDED:
+- KEEP IT TO 1-2 LINES MAXIMUM.
+- MAKE IT SPECIFIC, TECHNICAL, AND TARGETED.
+- DO NOT USE GENERIC LANGUAGE.
+
+PREFERRED DEFAULT:
+USE THE SPACE FOR TECHNICAL SKILLS, EXPERIENCE, PROJECTS, EDUCATION, OR IMPACTFUL BULLETS INSTEAD OF A SUMMARY.
+
+---
+
+## DEFAULT SECTION ORDER
+
+USE THIS ORDER BY DEFAULT:
+
+1. Header
+2. Education
+3. Technical Skills
+4. Experience
+5. Projects
+6. Certifications / Awards / Additional Information — only if relevant and space allows
+
+IF THE CANDIDATE HAS STRONGER EXPERIENCE THAN EDUCATION FOR THE ROLE, YOU MAY USE:
+
+1. Header
+2. Technical Skills
+3. Experience
+4. Projects
+5. Education
+
+IF THE ROLE IS PROJECT-HEAVY OR EARLY-CAREER, YOU MAY PRIORITIZE:
+
+1. Header
+2. Education
+3. Technical Skills
+4. Projects
+5. Experience
+
+ALWAYS CHOOSE THE ORDER THAT MAXIMIZES ATS MATCH AND HUMAN IMPACT FOR THE SPECIFIC JOB.
+
+---
+
+## ATS OPTIMIZATION RULES
+
+YOU MUST:
+
+- EXTRACT important keywords from the job title or job description.
+- IDENTIFY required skills, preferred skills, tools, frameworks, languages, platforms, and responsibilities.
+- NATURALLY MIRROR the employer's terminology.
+- PLACE the highest-value keywords in Technical Skills, Experience, and Projects.
+- USE exact skill names when supported by the candidate's real background.
+- PRIORITIZE role-relevant content over generic content.
+- WRITE bullets that combine technical work, tools used, and outcome.
+- KEEP all content truthful and evidence-based.
+
+DO NOT KEYWORD-STUFF.
+
+BAD:
+Python, Python, Python, AWS, AWS, AWS, React, React, React.
+
+GOOD:
+Built full-stack applications using React, Node.js, PostgreSQL, and REST APIs, with deployment workflows managed through Git and cloud-ready tooling.
+
+---
+
+## EXPERIENCE BULLET RULES
+
+EACH BULLET SHOULD FOLLOW THIS PATTERN WHEN POSSIBLE:
+
+ACTION VERB + TECHNICAL WORK + TECHNOLOGIES + RESULT / IMPACT / SCALE / PURPOSE
+
+GOOD BULLETS:
+- Built and deployed RESTful APIs using Node.js, Express, and PostgreSQL to support secure user workflows and structured data access.
+- Automated data processing workflows with Python and SQL, reducing manual analysis effort and improving reporting consistency.
+- Developed responsive React interfaces integrated with backend APIs to improve usability and streamline application workflows.
+
+BAD BULLETS:
+- Worked on software projects.
+- Helped with backend stuff.
+- Responsible for coding.
+- Used many technologies.
+- Passionate about building apps.
+
+USE STRONG ACTION VERBS:
+Built, Designed, Developed, Engineered, Automated, Deployed, Integrated, Refactored, Optimized, Improved, Implemented, Migrated, Secured, Scaled, Streamlined, Analyzed.
+
+---
+
+## PROJECT BULLET RULES
+
+PROJECTS MUST BE WRITTEN LIKE REAL ENGINEERING WORK, NOT CLASS ASSIGNMENTS.
+
+EACH PROJECT ENTRY SHOULD INCLUDE:
+- Project name.
+- Optional GitHub or live link.
+- Tech stack.
+- 1-2 concise bullets.
+
+PROJECT BULLETS MUST:
+- EMPHASIZE architecture, implementation, APIs, databases, deployment, performance, automation, UI/UX, data processing, AI/ML, or other role-specific elements.
+- BE tailored to the job description.
+- USE tools and terminology the employer cares about.
+- REMAIN truthful to the actual repository.
+
+---
+
+## LATEX REQUIREMENTS
+
+RECOMMENDED LATEX BASE:
+
+\\documentclass[10pt,letterpaper]{article}
+\\usepackage[margin=0.45in]{geometry}
+\\usepackage{enumitem}
+\\usepackage[hidelinks]{hyperref}
+\\usepackage{titlesec}
+\\usepackage{parskip}
+
+\\pagenumbering{gobble}
+\\setlength{\\parindent}{0pt}
+\\setlist[itemize]{leftmargin=*, noitemsep, topsep=1pt}
+\\titleformat{\\section}{\\large\\bfseries}{}{0em}{}[\\titlerule]
+
+\\begin{document}
+% Header, Education, Technical Skills, Experience, Projects
+\\end{document}
+
+YOU MAY ADJUST SPACING, FONT SIZE, AND SECTION ORDER TO FIT ONE PAGE.
+
+---
+
+## ONE-PAGE ENFORCEMENT
+
+IF CONTENT DOES NOT FIT:
+1. REMOVE the professional summary first.
+2. REMOVE weaker bullets.
+3. REDUCE older or less relevant experience.
+4. LIMIT projects to the strongest 2-3.
+5. COMPRESS skills.
+6. TIGHTEN language.
+7. USE smaller but readable spacing.
+8. NEVER use unreadably tiny text.
+9. NEVER hide text.
+
+---
+
+## FACTUAL ACCURACY RULE
+
+YOU MUST NEVER INVENT:
+
+- Employers, job titles, degrees, schools, graduation dates.
+- Certifications, metrics, awards, publications.
+- Technologies the candidate has not used.
+- Projects that do not exist.
+- Open-source contributions that did not happen.
+
+IF A METRIC IS NOT VERIFIED, DO NOT MAKE IT UP.
+
+YOU MAY USE non-numeric impact language when metrics are unavailable.
+
+GOOD: Improved maintainability by refactoring reusable React components and simplifying state management.
+BAD: Increased performance by 73% — unless that number is verified.
+
+---
+
+## WHAT NOT TO DO
+
+NEVER OUTPUT ANYTHING EXCEPT THE FINAL PDF.
+NEVER GIVE LATEX SOURCE AS THE FINAL ANSWER.
+NEVER MAKE THE RESUME MORE THAN ONE PAGE.
+NEVER INCLUDE A PROFESSIONAL SUMMARY BY DEFAULT.
+NEVER USE ICONS, IMAGES, COLUMNS, TABLES, TEXT BOXES, OR GRAPHICS.
+NEVER USE HIDDEN WHITE TEXT OR ATS MANIPULATION TRICKS.
+NEVER KEYWORD-STUFF.
+NEVER INVENT EXPERIENCE, SKILLS, EDUCATION, METRICS, OR PROJECTS.
+NEVER IGNORE THE CANDIDATE'S GITHUB.
+NEVER IGNORE EXISTING MEMORY OR LOCAL FILES.
+NEVER ASK FOR CLARIFICATION IF A JOB TITLE OR JOB DESCRIPTION WAS ALREADY PROVIDED.
+NEVER WASTE SPACE ON GENERIC CLAIMS LIKE "Hardworking individual" OR "Passionate learner."
+NEVER FINALIZE WITHOUT COMPILING THE PDF.
+NEVER FINALIZE WITHOUT CONFIRMING THE PDF IS ONE PAGE.`}
+/>
+
+## Step 2: Getting in Front of the Right People
+
+Applying through the job portal is a lottery. A well-tailored resume improves your odds there, but the conversion rates are still low when you are competing with hundreds of other candidates. The better play is to get a referral or make contact with a hiring manager directly, either before or simultaneously with applying.
+
+I know this sounds like networking advice. The actual mechanic is simpler than it sounds.
+
+**LinkedIn first.** When you find a role you want, search the company on LinkedIn and look for engineers at your target level or one above, people who recently joined the company because they are usually still in the mindset of helping others get in, and engineering managers who lead the team you would join.
+
+Send a connection request with a short note. Not a pitch. A note. Two or three sentences: what you are working on, why you are interested in what they are building, and one honest question. That is the entire message.
+
+The message that gets responses looks like this:
+
+> "Hey Sarah, I am applying to [company] and have been following what your team has been building with [specific thing]. I am working on [brief honest context]. Would love to chat for 15 minutes if you have time."
+
+The message that gets ignored looks like this:
+
+> "Hello, I am very interested in joining your company and would love to connect to discuss opportunities aligned with my background and goals."
+
+The difference is specificity. Generic messages read as mass outreach. Specific messages read as someone who actually looked at what the company is doing.
+
+**Referrals beat everything at stage one.** A referral does not guarantee an offer. It guarantees your resume gets seen by a human. In a pile of 300 applications, that is the only thing that matters before you can demonstrate anything else. If you know anyone at the company, ask them directly. Most people are willing to refer qualified candidates because companies have referral bonuses and the cost to the employee is low.
+
+**Alumni networks are underused.** LinkedIn makes it easy to filter company employees by university. Shared background removes about half the friction in cold outreach. A two-sentence message from a fellow Illinois Tech alumnus lands differently than the same message from a stranger.
+
+Apply through the portal as well. Do all of this in parallel. But if you are submitting applications and waiting, you are ceding the most controllable part of the funnel.
+
+## Step 3: The Behavioral Round
+
+Most engineers treat the behavioral round as an obstacle between them and the technical screens. That framing costs people offers.
+
+The behavioral round is not a personality test. It is a structured evidence collection exercise. The interviewer has a rubric. They are looking for signals about how you operate under pressure, how you handle disagreement, how you handle failure, and how you approach ambiguity. If you do not prepare structured answers, you will give rambling answers. Rambling answers fail behavioral rounds even when the underlying experience is strong.
+
+The framework that works is STAR: Situation, Task, Action, Result. Most engineers acknowledge STAR and then do not actually use it. Use it.
+
+**Prepare eight to ten stories.** Each one should map to a common behavioral theme:
+
+- A conflict with a teammate or stakeholder.
+- A time you failed and what you did about it.
+- A project where requirements changed partway through.
+- A decision you made with incomplete information.
+- A time you disagreed with your manager and how you handled it.
+- Something you built that you are genuinely proud of.
+- A situation where you had to pick up something outside your core competency.
+- A time you had to move fast without perfect information.
+
+Eight stories in STAR format cover 90% of behavioral questions across companies. The specific questions vary. The themes do not.
+
+**The structure matters.** Situation and Task should take about 20% of your answer. Action should take around 60%. Result takes the remaining 20%. Most people invert this and spend most of their time explaining context. The interviewer cares about what you did and what happened, not the background story.
+
+**Be specific.** "We improved system performance" is not an answer. "We reduced p99 latency by 40% by moving from polling to a webhook based architecture" is an answer. The specificity signals that the story is real and that you understand what you actually did.
+
+**Honesty beats heroism.** The failure question is not a trap. It is an opportunity. Interviewers know everyone has failed at something. What they are actually checking is whether you understand why it happened and whether you did something about it. A genuine failure story told cleanly, with a real result and a real lesson, is more compelling than a humble brag disguised as a weakness.
+
+Run through your stories out loud before the interview. Not in your head. The gap between thinking a story and saying it is significant. You will find the places where you lose the thread, rush through the result, or forget to close the loop. Fix those before you are in the room.
+
+### The conversational layer
+
+STAR handles the content of your answers. It does not handle the relationship, which is the part most technical candidates leave entirely to chance.
+
+**Start by taking control of the pace.** Open with this: "I'll be taking a few notes through the interview if that's okay. I might be a bit slow to respond while I'm finishing up a point." Most interviewers will say of course. What you have just done is bought yourself thinking time for the rest of the conversation, framed as conscientiousness.
+
+**Ask the first real question.** Before answering anything, ask: "What was it about my background that made you want to have this conversation?" It resets the dynamic from interrogation to dialogue. It also tells you what they are actually looking for before you have answered a single STAR question. Use that.
+
+**Be consultative, not transactional.** The job description is public. The interviewer has access to the hiring manager and knows exactly what they actually want from whoever fills this role. Ask about that instead. Something like: "Is there anything that's important for this role that is not in the job description?" is a better question than anything you could have prepped from the posting alone.
+
+Research the interviewer specifically before the call. If they recently joined the company, acknowledge it. "I noticed you made the move here a few months ago. How have you settled in?" is not small talk. It is intelligence gathering and it signals that you did more than skim the company's about page.
+
+A few questions worth working in naturally through the middle of the interview. Do not fire these in sequence. Pick two or three that fit the flow:
+
+- "How do you measure success for this role in the first six months?"
+- "What is the biggest technical challenge the team is currently facing, and how would a new engineer be expected to contribute to solving it?"
+- "How would having me in this role make your life or the team's job easier? What would I be taking off your plate?"
+- "What is one thing you would want solved by the end of this year?"
+- "What do people usually struggle with when they start out here? What is the learning curve like?"
+
+**Close deliberately.** As your second-to-last question, ask to recap what you heard them say they are looking for in this hire. Then ask: "Am I missing anything?" It shows you listened. It shows you can synthesize. It gives them an opening to surface something they want you to address.
+
+Your actual final question: "Was there anything about my background that raises a concern about my ability to do this job? I would love the chance to clarify." This is the hardest question to ask. Ask it anyway. When a concern surfaces, do not defend or apologize. Absorb and bridge to what you can do. If they want someone who has baked a cake and you have only baked cupcakes, say that. Focus on the learning curve being short, the support systems you rely on, and the foundation you are building from. Thank them and tell them you are looking forward to next steps. Play it cool.
+
+**On weakness questions.** Never say "I struggle with this." Say "Early on, I used to struggle with X, and every now and then I still do. What I have learned is to implement Y, largely because of a specific person or situation that made it clear." You are not hiding the weakness. You are showing the response to it.
+
+**On strength questions.** Do not lead with self-praise. Lead with evidence. "I have been told that I am good at..." or "I have the best time taking care of the X part of a project..." lets the evidence carry it instead of the claim.
+
+**Own your failures. Spread the success.** When talking about wins, it is always we, not I. When talking about failures, take the ownership. Interviewers notice both directions.
+
+**On sponsorship, if it comes up.** "It is not a dealbreaker for me, but since the H-1B is a lottery based system, I would like to maximise my chances at being picked." Clean, honest, not apologetic.
+
+What you are looking for in a role: growth, the chance to work on real challenges, and the ability to make a visible impact. Keep that frame in mind when questions come up about your goals. It is a coherent and honest signal.
+
+## Step 4: The Coding Round
+
+Most people applying to engineering jobs in 2025 have spent the last year and a half writing code with a copilot. Then they sit in a timed interview, share screen, and freeze. Not because they are dumb. Because they have not practiced writing code without autocomplete.
+
+This is the part you cannot outsource. The behavioral round can be prepared with structured stories. The system design round can be prepared with a solid framework. The coding round requires you to actually write correct code, in real time, while talking, on a problem you have not seen before. The only way to get better at it is to practice doing it.
+
+### The CFAS framework
+
+Before writing a single line, walk through four steps: Clarify, Framework, Assumptions, Solution.
+
+**Clarify** means asking the right questions before you start. What are the input constraints? What data types are you receiving? What does the output look like? What does "optimal" mean here, time or space? Are there edge cases worth calling out upfront: empty arrays, negative numbers, very large inputs? Spend two to three minutes here. Interviewers have seen enough candidates jump straight to code only to solve the wrong problem.
+
+**Framework** means stating your approach before you write any code. Say it out loud. "I am going to use a sliding window here because we are looking for a subarray with a running constraint." The interviewer can catch a wrong direction before you spend fifteen minutes on it. This is also what distinguishes a problem-solver from someone who just happened to memorize this exact problem.
+
+**Assumptions** means writing down what you are assuming so your reasoning is legible. "I am assuming the input array is non-empty and contains only integers." These are not weaknesses. They are clarity. If your assumption is wrong, the interviewer can correct you. If it is right, you have demonstrated you thought about it.
+
+**Solution** means writing the code after the reasoning is clear. You have the approach. You have the constraints. Now you write.
+
+### Write the naive solution first
+
+Even if you know the optimal answer, write the brute force first. Say it out loud. Walk through why it works and what its complexity is. Then say "I can do better here" and walk through the optimization.
+
+This matters for two reasons. First, it shows decomposition. You understand the problem well enough to solve it before you optimize it, which is a different and more meaningful signal than memorizing the optimal solution. Second, if you run out of time, a working naive solution is better than a half-finished optimal one. Partial credit exists in interviews. Incomplete implementations score near zero.
+
+### Talk through everything
+
+Never go silent. This is the most common mistake in coding interviews and it is entirely avoidable. When you go silent, the interviewer has no idea whether you are stuck, thinking, or completely lost. They cannot help you because they do not know where you are.
+
+Think out loud. Say "I am looking at this edge case" or "I am not sure this handles negative numbers, let me check." Check in naturally at decision points: "Does this approach make sense before I keep going?" This phrasing invites the interviewer to redirect you if needed. Interviewers can and do nudge candidates who give them openings. They cannot help candidates who are silent.
+
+### Practice for fluency, not familiarity
+
+The gap most people have is fluency, not algorithm knowledge. Knowing that you should use a sliding window is different from implementing it cleanly under pressure, without blanking on the initialization condition or the termination check. Familiarity with patterns gets you to the right idea. Fluency gets you to working code.
+
+The practice resources that cover this well:
+
+- [Neetcode 150](https://neetcode.io/) is the canonical structured list. It covers the major patterns without padding. This is where I would start.
+- [LeetCode Top Interview 150](https://leetcode.com/studyplan/top-interview-150/) is LeetCode's own curated list. Broader than Neetcode 150, useful for supplemental coverage once you have the core patterns.
+- [Algomaster](https://algomaster.io) is a solid free alternative with pattern based organization.
+- [Sean Prashad's LeetCode Patterns](https://seanprashad.com/leetcode-patterns/) maps patterns to problems so you can identify where your weaknesses are.
+- [LeetCode Company Wise Problems](https://github.com/liquidslr/leetcode-company-wise-problems) tags problems by company. More useful the closer you are to a specific interview.
+- The [Neetcode YouTube playlist](https://www.youtube.com/watch?v=3OamzN90kPg&list=PLPe9IkX86X3y5m_MvtNu2ughxsvkqUNKr) has free video walkthroughs. Watch them after attempting the problem, not instead of it.
+
+The 15 patterns that cover most interview problems: sliding window, two pointers, binary search, BFS, DFS, backtracking, dynamic programming, monotonic stack, heap, intervals, linked list manipulation, trees, graphs, tries, and bit manipulation. If you can implement each one cleanly and identify which problems map to which pattern, you are prepared for most general SWE interviews.
+
+Do not treat this like a daily streak game. Doing 10 problems at surface level is not better than doing two or three with full understanding. Work through the CFAS framework for every practice problem. Write your own solution before looking at any explanation. Thirty minutes daily beats a five-hour weekend session most of the time because consistency builds the muscle memory that fluency requires.
+
+### One uncomfortable drill
+
+Occasionally write code on paper or on a physical whiteboard. Not because most interviews use whiteboards. Because it forces you to write complete, syntactically correct code with no autocomplete, no error highlighting, and no easy refactoring. You have to think through the entire function before you write the first line. It is uncomfortable. That is the point. The discomfort in practice is significantly less costly than the discomfort in the actual interview.
+
+## Step 5: The Company Research Doc
+
+Before any interview, I build a one page research document. This is not about impressing the interviewer by saying "I did my research." It is about walking into the conversation with context instead of constructing answers on the fly.
+
+The document takes 30 to 45 minutes to build and covers four things.
+
+**The company.** What they actually do in one honest sentence, not the PR version. Revenue model and business stage: seed, Series A, Series B, public, profitable bootstrapped. Recent news: funding rounds, product launches, layoffs, pivots, strategic shifts. How the engineering team is structured if that information is publicly available.
+
+**The product.** What the core product does and who the customer is. What the main technical challenge appears to be based on what you can observe. Any public technical content from their engineering blog, conference talks, or open source work. If they have a technical blog and you have not read at least one post from it before the interview, you left information on the table.
+
+**The role.** What they are specifically asking for, not the generic version. What problems this hire is probably trying to solve based on the job description and the current stage of the company. What your most relevant experience looks like from their perspective, not yours.
+
+**Questions to ask.** Three to five questions you actually want answered, based on what you found. These should be specific. "What does a typical week look like for someone in this role?" is forgettable. "I noticed you shipped the migration to a distributed queue system earlier this year based on your engineering blog post. How has that changed the on-call experience for the team?" is a different kind of conversation.
+
+The research doc also protects you from fumbling when they ask "What do you know about us?" That question shows up in almost every interview. Having a clean, factual answer ready is easy when you have already written it down.
+
+Build it fresh for every company. The 30 minutes is worth it every time.
+
+For roles where the research surface is larger — a system design round at a company with a specific technical domain, an interview with a founding engineer who has published opinions — I use the prompt below to generate a full tabbed HTML study document. Fill in the variables at the top, drop it into Claude, and it runs the research pass and builds the doc in one shot. Claude handles the web searches natively; if you use GPT, you need to supply the research notes yourself before pasting.
+
+You can turn this into a persistent Claude Code skill the same way you would the resume agent. Create `~/.claude/skills/interview-research/SKILL.md`, paste the prompt as the skill body, and set `name: interview-research` in the frontmatter. After that, `/interview-research` in any Claude Code session loads the full research and build context automatically, with access to your local files, project notes, and memory. Pair it with a `company_context.md` in the skill directory and the prompt can pick up recurring context without you having to re-paste anything.
+
+<PromptBlock
+  label="Tabbed HTML interview study doc — paste into Claude with variables filled in"
+  prompt={htmlStudyDocPrompt}
+/>
+
+Three things are worth understanding about why the prompt works the way it does. The research is Step 1 in the instructions, not an afterthought, because leaving it implicit produces plausible-sounding fabrications. The Trustpilot instruction specifically matters — marketing pages do not admit failure modes, but customer reviews do. That is where the real product story lives. The HTML requirements are engineering-grade (named CSS variable palette, keyboard navigation, print stylesheet, sandboxed iframe handling) because "make it look nice" produces unusable slop at 11pm. Specificity produces something you can actually open in a browser the morning of the call.
+
+## Step 6: The System Design Round
+
+System design interviews are highly company size dependent. A Series A startup with 12 engineers asking you to design a pharmacy notification system is a different exercise than a FAANG company asking you to design a Twitter scale feed. The scale differs by several orders of magnitude. The trade-offs differ. What "correct" means differs.
+
+What does not change is the structure. Most people fail system design interviews not because they lack technical knowledge but because they jump to solutions before understanding the problem. Drawing a load balancer in the first two minutes of an interview is not impressive. It signals that you skipped requirements gathering to show off components you already knew you were going to draw anyway.
+
+### The framework
+
+**1. Requirements (5 to 8 minutes)**
+
+Spend the first five to eight minutes on requirements. This is not a formality. This is the most important part of the interview. The system you design is only as good as your understanding of what the system needs to do.
+
+Ask functional requirements: what does this system actually need to do from the user's perspective? Ask non-functional requirements: what are the constraints? Cover scale, latency, consistency, availability, read to write ratio, durability, and geography.
+
+Ask concrete questions:
+
+- How many total users?
+- How many daily active users?
+- What does peak traffic look like?
+- What is the expected read to write ratio?
+- What does "fast" mean for this system? Milliseconds? Seconds?
+- Is slightly stale data acceptable or does this require strong consistency?
+
+Write the numbers down. Visibly. The interviewer should see you recording the constraints. Those numbers are what you will reference for every design decision you make for the rest of the interview.
+
+**2. Capacity estimation (3 to 5 minutes)**
+
+Do back of envelope math. Estimate queries per second, storage per day, and bandwidth. Do not aim for perfect precision. Aim for correct order of magnitude.
+
+A worked example: 100M daily active users, 10 reads per user per day, that is 1B reads per day. Divide by 86,400 seconds in a day and you get roughly 11,500 reads per second as a baseline. Apply a peak multiplier of two to three and you are designing for 25,000 to 35,000 reads per second at peak. Now you know whether you need a cache. You know whether a single database instance is viable. You have numbers to defend your decisions.
+
+Without this math, every architectural choice is a guess. "I would use a cache here" means something different when you can show the read volume that justifies it.
+
+**3. High level design (around 10 minutes)**
+
+Draw the happy path. Clients, API gateway, application servers, database, cache, queues, and CDN where relevant. Do not gold plate. Do not draw every component you know. Draw the components that the system actually needs given the requirements you gathered.
+
+Define the API endpoints at this stage. Show the request and response shape where it is useful. This grounds the design in what the system actually has to do rather than what components you feel like drawing.
+
+**4. Deep dive (around 15 minutes)**
+
+Go deep on one or two components. Let the interviewer steer this. Common areas: database schema and indexing strategy, caching layer design and cache invalidation, cache eviction policies, message queue configuration and consumer behavior, consistency model and the reasons for choosing it.
+
+Name trade-offs explicitly. Do not just state what you chose. Say why you chose it and what you are giving up. Eventual consistency because the read volume makes strong consistency prohibitively expensive. A denormalized schema because the query patterns favor read performance over update simplicity. The why is what the interviewer is actually evaluating.
+
+**5. Wrap up (around 5 minutes)**
+
+Identify the bottlenecks in your design. Where does it fall over first under load? What would you monitor? What metrics matter? What would page someone at 2am? Cover the obvious failure modes: what happens when the database goes down, when the cache goes cold, when the queue backs up. You do not need to solve all of them. You need to demonstrate that you thought about them.
+
+### The mistakes people make
+
+- Drawing load balancers and caches before anyone has said what the system needs to do.
+- Estimating nothing, which means you have no basis for any architectural decision and the interviewer has no way to evaluate your reasoning.
+- Designing for 10 users and never discussing what happens at 10 million, even for a company where that scale is the whole point.
+- Saying "I would use Kafka" without explaining why message durability or decoupling is needed for this specific system.
+- Going two layers deep into one component before you have even sketched the high level picture, which leaves the interviewer without a shared mental model for the rest of the conversation.
+
+### How to practice
+
+[System Design Primer](https://github.com/donnemartin/system-design-primer) by donnemartin has 280k plus stars on GitHub and is the most comprehensive single written resource in the space. Read through the concepts section before you start designing individual systems.
+
+[ByteByteGo on YouTube](https://www.youtube.com/@ByteByteGo) is Alex Xu's channel with visual walkthroughs of common system design problems. The visual format makes trade-offs easier to absorb than text alone.
+
+[Hayk Simonyan on YouTube](https://www.youtube.com/@hayk_simonyan) covers system design with a focus on the interview format specifically. Good complement to ByteByteGo once you have the basics.
+
+NeetCode's system design course on YouTube covers the interview mechanics well and is free.
+
+Hello Interview and DesignGurus both offer mock interviews with real feedback. If you are going into a loop at a company where system design is heavily weighted, a mock with a qualified reviewer is worth the cost.
+
+The most effective practice loop: pick one system per week. Design it on paper without looking anything up. Then read how it is actually built, from the System Design Primer, from engineering blogs, from ByteByteGo. The gap between your design and the real thing tells you exactly what you are missing. Repeat.
+
+### The calibration that matters
+
+A Series A startup wants product thinking and pragmatic trade-offs. They do not need you to design for 100M users. They need you to show judgment about what to build now versus what to defer.
+
+A FAANG-style company wants scale reasoning. They want to see sharding, caching strategy, consistency model selection, and reliability patterns discussed with numbers behind them.
+
+Research the company before the system design round. Know roughly what scale they operate at. Know the reliability expectations for their domain. A payment system has different availability requirements than a social feed. That context changes what good looks like in the room, and showing up calibrated to their reality is a meaningful signal.
+
+## The System Underneath the System
+
+There is a meta level observation worth making about everything above.
+
+Each step in this system addresses a specific failure mode. The resume agent addresses the failure mode of applying with a generic resume that does not match what the role is looking for. The outreach step addresses the failure mode of being invisible in a pile of applications. The behavioral prep addresses the failure mode of rambling through STAR questions because you never actually structured your stories. The coding prep addresses the failure mode of freezing on patterns you know intellectually but have not practiced implementing. The system design framework addresses the failure mode of jumping to solutions before you understand the problem.
+
+None of these are failures of intelligence. They are failures of preparation. And preparation is controllable in a way that most of the job search is not.
+
+There is a lot of genuine luck in hiring. You cannot control whether a hiring manager had a bad week and is screening more aggressively than usual. You cannot control whether someone with identical credentials applied two days before you. You cannot control whether a role gets frozen the day after you ace the final round. Those things happen and they happen to capable people.
+
+What you can control is the quality of your preparation at each stage. And when you put the full system together, the randomness that remains is mostly outside your influence anyway. You are not eliminating luck. You are removing the part of failure that was actually preparation failure masquerading as bad luck.
+
+That distinction matters because most people who are struggling in a job search are not struggling because the market is cruel. They are struggling because they have a specific gap, usually one of the five things above, that they have not identified and addressed. The system does not guarantee outcomes. It closes the gaps that are yours to close.
+
+## The Resource List
+
+This is not a curated masterlist of everything worth reading about interview prep. It is the actual list of resources that informed the system above. Some are included because they have been passed around enough that skipping them would be an omission. Others are niche and specific. Use it as a reference, not a syllabus.
+
+### General Interview Prep
+
+- [Tech Interview Important Topics and Techniques](https://github.com/Coder-World04/Tech-Interview-Important-Topics-and-Techniques) — A GitHub repo that maps the major interview topics across DSA, system design, and behavioral prep. Good for getting an overview of what you are working with before committing to any one area.
+
+- [Awesome Cheatsheets](https://github.com/LeCoupa/awesome-cheatsheets) — Quick syntax references for major languages and frameworks. Useful for refreshing on specifics before a technical screen in a language you know but have not touched recently.
+
+- [Tech Interview Handbook](https://www.techinterviewhandbook.org/) — Free, comprehensive guide covering the full interview pipeline from resume to offer negotiation. One of the most complete single resources in the space.
+
+- [InterviewBit](https://www.interviewbit.com/) — Structured DSA practice with a track based progression. Good for people who want guided curriculum over raw problem lists.
+
+- [Cracking the Coding Interview solutions repo](https://github.com/careercup/ctci) — The community solutions repository to accompany the CTCI book. Useful when you are working through the book and want additional implementation references.
+
+### Coding Practice and DSA
+
+- [Neetcode](https://neetcode.io/) — Curated problem lists organized by pattern. The Neetcode 150 is the most balanced starting list I have found for general SWE interviews.
+
+- [Neetcode 150 YouTube playlist](https://www.youtube.com/watch?v=3OamzN90kPg&list=PLPe9IkX86X3y5m_MvtNu2ughxsvkqUNKr) — Free video walkthroughs for the Neetcode 150 problems. Watch these after attempting the problem yourself, not instead of it.
+
+- [LeetCode Top Interview 150](https://leetcode.com/studyplan/top-interview-150/) — LeetCode's own curated interview list. Broader coverage than Neetcode 150. Use it for supplemental practice once you have the core patterns solid.
+
+- [Algomaster](https://algomaster.io) — A free alternative with pattern based problem organization. Worth using alongside Neetcode if you want more problems per pattern.
+
+- [Sean Prashad's LeetCode Patterns](https://seanprashad.com/leetcode-patterns/) — A clean visual map from pattern to problem. Use this to identify which patterns you are weakest on and target practice there.
+
+- [LeetCode Company Wise Problems](https://github.com/liquidslr/leetcode-company-wise-problems) — Problems tagged by company so you can focus on problems that show up at your target companies. More useful the closer you are to specific interviews.
+
+- [DSA Patterns for LeetCode video](https://youtu.be/DjYZk8nrXVY?si=rLHdDbwRU9wlPxxv) — A walkthrough of the 15 most important interview patterns. Good starting point before committing to any problem list.
+
+- [LeetCode Starter video](https://youtu.be/G5_Q2_yRFsY?si=mXvRxyYh77qRNsYO) — An introductory guide to navigating LeetCode as a platform. Useful if you are starting from scratch.
+
+- [algo.monster](https://algo.monster/) — Pattern-focused interview prep with a paid tier but substantial free content. The pattern cheat sheet is a useful quick reference before interviews.
+
+- [LeetCode Solutions by Preksha](https://github.com/MahajanPreksha/LeetCode-Solutions-By-Preksha) — A community solutions repository with clean, readable implementations. Useful when you are stuck and want to see a human-written solution before watching a video explanation.
+
+- [ashishps1's SDE resources](https://github.com/ashishps1) — A collection of system design, DSA, and behavioral resources curated for SDE prep. Dense but useful as a reference once you have the basics.
+
+### System Design
+
+- [System Design Primer](https://github.com/donnemartin/system-design-primer) — The most referenced open system design resource with 280k plus GitHub stars. Comprehensive coverage of concepts, trade-offs, and worked examples. Start here.
+
+- [ByteByteGo YouTube](https://www.youtube.com/@ByteByteGo) — Alex Xu's channel with visual walkthroughs of common system design problems. The visual format makes architectural trade-offs easier to reason about than text alone.
+
+- [Hayk Simonyan YouTube](https://www.youtube.com/@hayk_simonyan) — Structured system design walkthroughs focused on the interview format specifically. A good complement to ByteByteGo.
+
+### Full Stack and Web Development
+
+- [MERN Interview Sets PDF](https://github.com/shubhdhungana/mern-interview-sets-pdf/tree/main) — A collection of interview questions specific to the MongoDB, Express, React, Node.js stack. Useful for roles that explicitly list MERN as a requirement.
+
+### AI Engineering and Agents
+
+- [SWE to AI Engineer Roadmap](https://docs.google.com/document/d/1-VTGx8ehgZzlU1yTldHvRfYUYXDc3RHxbmFZw7WqhkI/edit?tab=t.0#heading=h.c7tmuic1h5l) — A structured guide for transitioning from general software engineering into AI engineering roles. Covers the specific skills gap between the two tracks.
+
+- [AI Engineering Interview Guide](https://github.com/alexeygrigorev/ai-engineering-field-guide/blob/main/interview/01-interview-process.md) — A detailed walkthrough of the AI engineering interview process with sample questions and expected depth. Specific enough to be practically useful.
+
+- [All Agentic Architectures](https://github.com/FareedKhan-dev/all-agentic-architectures) — A repo mapping the major architectural patterns for AI agents. Good reference when discussing design decisions in AI engineering interviews.
+
+### ML, Data Science, and LLMs
+
+- [ML Interview Prep by khangich](https://github.com/khangich/machine-learning-interview) — A focused prep guide for machine learning engineering roles covering ML system design, statistics, and modeling questions.
+
+- [Machine Learning Interviews](https://github.com/alirezadir/Machine-Learning-Interviews) — A broader ML interview resource covering the full interview loop at ML heavy companies. More depth than most single resources.
+
+- [Data Science Interview Questions](https://github.com/alexeygrigorev/data-science-interviews/blob/master/technical.md) — Technical questions focused on the data science side of interviews: statistics, probability, SQL, and ML modeling.
+
+- [Stanford CME 295 Transformers and LLMs cheatsheets](https://github.com/afshinea/stanford-cme-295-transformers-large-language-models) — Compressed reference sheets for transformer architecture and LLM concepts. Good for reviewing before interviews at AI-focused companies.
+
+- [Data Science Cheatsheets](https://github.com/FavioVazquez/ds-cheatsheets) — A large collection of visual cheat sheets covering statistics, ML algorithms, and data wrangling tools. Quick reference format before interviews.
+
+- [Deep ML](https://www.deep-ml.com/) — A platform for ML practice problems similar to LeetCode but focused on ML implementation. Good for roles that include hands-on ML coding in the interview process.
+
+### Automation and Tooling
+
+- [Gstack](https://github.com/garrytan/gstack) — A Claude Code skill suite for engineering workflows covering design, review, QA, and deployment. The tooling referenced throughout this article runs on gstack.
+
+- [Career Ops](https://github.com/santifer/career-ops) — A collection of scripts and tools for automating parts of the job search process. Worth reviewing before you build your own tooling from scratch.
+
+### Project Building Resources
+
+- [Project Based Learning](https://github.com/practical-tutorials/project-based-learning) — A GitHub repo mapping programming projects to the skills they teach. Use this if you want to fill a skill gap through building rather than reading.
+
+- [Build Your Own X](https://github.com/codecrafters-io/build-your-own-x) — Curated tutorials for building real implementations of databases, HTTP servers, shell environments, and more from scratch. The best way to deeply understand infrastructure you usually take for granted.
+
+- [AI Agents from Scratch](https://github.com/pguso/ai-agents-from-scratch) — A hands-on implementation guide for building agents without relying on high level frameworks first. Forces understanding of what the frameworks are actually doing under the hood.
+
+- [500 AI Agents Projects](https://github.com/ashishpatel26/500-AI-Agents-Projects) — A reference collection of AI agent project ideas organized by use case. Useful for identifying a project scope that maps to a target role's domain.
+
+- [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers?tab=readme-ov-file#file-systems) — A curated list of MCP (Model Context Protocol) servers. Useful for understanding the current tooling ecosystem if the role involves AI infrastructure or developer tooling.
+
+- [OpenAI Cookbook](https://cookbook.openai.com) — OpenAI's official collection of example use cases and implementation guides. The first stop for any OpenAI API integration questions.
+
+- [n8n Templates](https://github.com/enescingoz/awesome-n8n-templates) — A collection of workflow automation templates built on n8n. Useful for building out automation-related portfolio projects or understanding workflow orchestration patterns.
+
+### Curricula and General Dev
+
+- [DevDocs](https://github.com/freeCodeCamp/devdocs) — Offline-capable API documentation for a large number of languages and frameworks. Use this when practicing without wanting to rely on search for language reference.
+
+- [AI Agents for Beginners by Microsoft](https://github.com/microsoft/ai-agents-for-beginners) — A free curriculum covering agentic AI concepts from the ground up. Well structured for engineers who know ML basics but have not built agents before.
+
+- [MCP in Cursor video](https://www.youtube.com/watch?v=L94WBLL0KjY&t=234s) — A practical walkthrough of integrating MCP servers with the Cursor editor. Good for understanding real-world AI developer tooling workflows.
+
+- [Claude Codex Cursor Superpowers](https://github.com/obra/superpowers) — A set of configurations and prompts for enhancing Claude and Cursor workflows. More tooling reference than interview prep, but useful if the role involves AI-assisted engineering.
+
+- [AI Engineering Hub](https://github.com/patchy631/ai-engineering-hub) — A collection of tutorials, notebooks, and resources for AI engineering in production. Covers RAG, agents, fine-tuning, and evaluation with practical examples.
+
+- [LLM Engineering Essentials by Nebius Academy](https://github.com/Nebius-Academy/LLM-Engineering-Essentials) — A curriculum for engineers building LLM based applications. Practical and production focused rather than research focused.
+
+- [Stanford CS336 YouTube playlist](https://youtube.com/playlist?list=PLoROMvodv4rOY23Y0BoGoBGgQ1zmU_MT_&si=TeAo6y2lqkz21_D_) — Stanford's course on building language models from scratch. Watch this if you want to understand what is happening inside the models you are using in production.
+
+- [AI ML Roadmap from Scratch](https://github.com/aadi1011/AI-ML-Roadmap-from-scratch?tab=readme-ov-file) — A step-by-step learning path from zero ML knowledge to production ready skills. Useful for identifying specific gaps in your background.
+
+- [100 Days of ML Code](https://github.com/Avik-Jain/100-Days-Of-ML-Code) — A structured 100-day curriculum for learning ML through daily implementation. More useful as a framework for building a consistent practice than as a strict day-by-day guide.
+
+- [Machine Learning Complete by Nyandwi](https://github.com/Nyandwi/machine_learning_complete) — A comprehensive notebook based ML reference covering algorithms, implementations, and concepts with wide coverage.
+
+- [buildml.substack.com](https://buildml.substack.com) — A newsletter covering ML engineering in practice. Read this to stay current on the practical side of building with ML in production.
+
+- [Version Control Git video](https://www.youtube.com/watch?v=8JJ101D3knE) — A comprehensive video tutorial covering Git from the fundamentals through advanced workflows. A solid reference for anyone who wants to close gaps in their Git knowledge before technical screens.
+---
+
+The floor on all of this is rising. Within a year or two, tailored resumes will be table stakes and so will basic AI-assisted behavioral prep. The parts of the process that still require genuine judgment are the ones that are staying hard. Reasoning about requirements before drawing a single component. Communicating your thinking clearly while solving a problem under pressure. Calibrating a design to a company's actual scale instead of the scale you feel like designing for. Those parts do not get automated, and they do not improve without real deliberate practice. That is where the work is.

@@ -963,3 +963,101 @@ input::placeholder, textarea::placeholder {
 .dark .hljs-variable, .dark .hljs-template-variable { color: #fdba74; }
 .dark .hljs-type, .dark .hljs-class .hljs-title { color: #5eead4; }
 .dark .hljs-function .hljs-title { color: #38bdf8; }
+
+/* =============================================
+   PROMPT BLOCK
+   ============================================= */
+
+.prompt-block {
+  margin: 2rem 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.prompt-block-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  background: var(--surface-raised);
+  border: 0;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: left;
+  transition: opacity 0.15s ease;
+}
+
+.prompt-block-header:hover { opacity: 0.8; }
+
+.prompt-block-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.prompt-block-label::before {
+  content: '⌘';
+  font-size: 0.75rem;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  line-height: 1.6;
+}
+
+.prompt-block-chevron {
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.prompt-block-chevron.is-open { transform: rotate(180deg); }
+
+.prompt-block-body {
+  position: relative;
+  padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.prompt-block-copy {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.prompt-block-copy:hover { color: var(--text-primary); }
+
+.prompt-block-pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.prompt-block-pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}

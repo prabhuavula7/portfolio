@@ -74,18 +74,57 @@ Include at least one list and one short code block when relevant.
 End with a single strong sentence.
 ```
 
+## Voice and tone (strict)
+
+These apply to every article published on this site. They are non-negotiable.
+
+- Write in first person. Present tense where natural.
+- Keep paragraphs short. 3 to 5 sentences maximum.
+- Write like a founding engineer at midnight, not a brand account.
+- Be direct. Be practical. Be occasionally sardonic, not performative.
+- Use zero corporate speak. Zero inspirational filler.
+- Do not repeat points. Move on once a point has landed.
+- Do not write like LinkedIn advice content. Do not write like a white paper.
+
+**Banned phrases and patterns:**
+- "unlock your potential", "navigate today's challenging landscape", "leverage your network"
+- "position yourself for success", "game changer", "comprehensive curated guide"
+- "In conclusion", "To summarize", "As we have seen"
+- "Just stay consistent", "Believe in yourself", "Keep grinding"
+- Weak closings, motivational sign-offs, or calls to action that summarize the article
+
+**Compound word style (no hyphens):**
+- Write "end to end", "full stack", "long form", "one page", "real time", "high level", "well known", "deep dive"
+- Never hyphenate compound modifiers: "back of envelope math", not "back-of-envelope math"
+
+**Contractions:**
+- Avoid "I'd" — write "I would" or restructure the sentence
+- Use "it's", "that's", "don't" sparingly and only when the sentence genuinely needs the rhythm
+
+**Intro and closing rules:**
+- Intro: prose only, no bullet lists, 3 to 5 paragraphs
+- Closing: prose only, no bullet lists, no section header, 3 to 5 sentences
+- Closings must make a forward-looking point, not summarize or motivate
+
+## Research and sourcing
+
+- Build a light research pass before writing any article that makes claims about tools, platforms, or ecosystems.
+- When citing star counts or metrics from external repos, only include figures you can verify or that are safely known from the source material.
+- Resource lists should describe what the resource is and when to use it. One to two sentences per resource. No marketing language. No over-praise.
+- Do not invent resources. Do not skip resources that were agreed on. Use markdown links with descriptive anchor text, never raw URLs.
+
 ## Style guidelines (strict)
 
 - Keep paragraphs short (3–4 sentences). No walls of text.
-- Use clear headings and avoid deep nesting (max H2 + H3).
+- Use clear headings and avoid deep nesting (max H2 + H3, never H4).
 - Prefer simple lists (`-`) over custom bullet symbols.
 - Avoid emojis and excessive formatting.
-- Use hyphenated terms consistently (example: \"30-day plan\").
 - Use fenced code blocks with a language tag (example: ```js, ```python, ```java, ```r).
 - Keep headings short and sentence‑case.
-- Avoid giant blocks of text; prefer 3–4 sentences per paragraph.
 - Do not include inline citations in the body. All sources go in the Sources section.
 - For the Sources section, wrap links in a `<ul className="sources-list">` so sources are left-aligned and not justified.
+- No table of contents in any article.
+- Horizontal rules (`---`): only one per article, between the intro and the first major section.
 
 ## Code tabs (multi-language)
 
