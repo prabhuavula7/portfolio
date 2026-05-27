@@ -101,6 +101,9 @@ jspm_packages/
 tmp/
 temp/
 
+# Skills
+tech-blog-writer.skill
+
 # Claude Code / AI tooling
 CLAUDE.md
 AGENTS.md

@@ -84,7 +84,7 @@ const BlogPost = () => {
               <img
                 src={post.cover}
                 alt={post.title}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover object-${post.coverPosition || 'center'}`}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-black/0" />
             </div>

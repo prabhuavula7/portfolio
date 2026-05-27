@@ -56,6 +56,7 @@ export const blogPosts = Object.keys(postModules)
       author: mergedData.author || '',
       excerpt: normalizeExcerpt(mergedData.excerpt, content),
       cover: mergedData.cover || '/preview.png',
+      coverPosition: mergedData.coverPosition || 'center',
       readTime: mergedData.readTime || '',
       Component: module.default,
       tags: mergedData.tags || []
