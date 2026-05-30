@@ -1,0 +1,84 @@
+---
+title: "When Claude Forgets What It's Building"
+date: "2026-05-29"
+readTime: "7 min read"
+author: "Prabhu Kiran Avula"
+excerpt: "I tried to use Claude Code to write a full tech spec, implementation plan, and Jira tickets for a project at ActionAtlas. The context window fell apart before I got to the Jira tickets. This is not a Claude problem. It's an architecture problem."
+cover: "/blog/whenclaudeforgets.png"
+coverPosition: "center"
+tags: ["Claude Code", "Agentic AI", "Software Architecture", "Engineering", "Context Engineering"]
+---
+
+## Context
+
+Three weeks ago at ActionAtlas, I was trying to do something that sounds trivial: take a complex product initiative and turn it into a tech spec, an implementation plan, a roadmap, and a set of Jira tickets. Not write the code. Just the planning artifacts. The kind of thing that takes a senior engineer half a week to do well, and which organizations routinely underestimate because the output looks like text, not software.
+
+I had Claude Code open. I'd been using it constantly. It's genuinely good, not in the "look what I got it to do on Twitter" way, but in the actual "this saved me four hours today" way. So I started feeding it context: the product brief, the existing architecture docs, the constraints, the non-negotiables. I asked it to produce a tech spec I could publish to Confluence.
+
+What came back was impressive for the first 40%. Then something shifted. The further we got into the spec, the more the model started losing the thread. Decisions made early in the document were not being respected by the sections that came later. By the time I asked it to convert the spec into Jira tickets, the tickets described a different product than the spec. Technically correct in isolation. Architecturally inconsistent as a whole.
+
+This is not a bug report. It's a structural reality about how LLMs work with long contexts, and a frame that gets lost in all the hype around agentic coding.
+
+---
+
+## What the context window actually does to long documents
+
+The research on this is pretty settled. The "lost in the middle" problem, documented formally by Liu et al. and since replicated across every major model, describes how LLMs pay disproportionate attention to the beginning and end of their context and systematically underweight the middle. This is not a quirk. It's a consequence of how positional encoding works at a transformer architecture level. Rotary Position Embedding introduces a decay effect: the more tokens between two pieces of information, the harder it is for the model to maintain their relationship.
+
+A full tech spec runs long. Mine was north of 8,000 words in Markdown, which is comfortably in the range where even a 200K token context window starts exhibiting retrieval degradation. Recent benchmark data shows 20 to 50% accuracy drops from 10K to 100K tokens on tasks that require the model to connect information from different parts of the context. The Jira tickets I needed were, in effect, a multi-document question answering task over the entire spec. That's exactly the failure mode the research predicts.
+
+Claude Code adds another layer. It has its own context compression pipeline. When a session runs long, it starts autocompacting, summarizing earlier context to make room for new input. Anthropic's own telemetry has shown thousands of sessions with consecutive autocompact failures. What this means in practice is that a long Claude Code session working through a complex document is not the same as a model with perfect recall of everything that came before. The context at any given step is a compressed, lossy representation of the earlier work.
+
+This is the actual mechanism behind my tech spec falling apart. It's not that Claude reasoned badly. It's that the context it was reasoning over was incomplete by the time it got to the Jira tickets.
+
+## What Holland Tech got right
+
+There's a good piece from Holland Tech titled "Claude Is Not Your Architect" that approaches this from a different angle. Their core observation is what they call the attaboy problem: Claude tends to enthusiastically agree with whatever architectural direction the engineer pushes. A developer who doesn't know what they're doing will get an eloquent confirmation that they don't know what they're doing, executed at high speed. The accountability gap follows directly. When the architecture is wrong, nobody said it was wrong. The AI generated it, the human approved it, and now both parties are somewhat surprised by the outcome.
+
+Holland's prescription is clean: engineers design, agents implement. The human sets the architectural goal. The AI executes within it. The AI should not be driving decisions about data models, service boundaries, or system constraints because it doesn't have the business context, the institutional knowledge, or the operational skin in the game to make those calls responsibly.
+
+My ActionAtlas experience is essentially a demonstration of why. When I gave Claude Code a brief and asked it to produce architecture documents, it didn't fail because the model was dumb. It failed because I was asking it to do something it can't do reliably: maintain coherent architectural intent across a long, complex, multi-section document while also adapting to constraints that shift as the context evolves. That's not an execution task. That's a judgment task.
+
+The distinction matters. Execution tasks have well-defined success criteria. You can test whether a migration worked. You can check whether the API surface matches the spec. Judgment tasks require someone to decide what "right" even means, and to maintain that definition consistently across everything the system touches. LLMs are genuinely good at the former and structurally unreliable at the latter, for reasons that are baked into how the architecture works.
+
+## Dynamic Workflows doesn't solve this. It changes the stakes.
+
+On May 28, 2026, Anthropic shipped Opus 4.8 alongside Dynamic Workflows for Claude Code. The headline capability is real: workflows can now spawn up to 1,000 parallel subagents, orchestrated by a JavaScript script that Claude writes and a runtime then executes in the background. Critically, the plan lives in script variables rather than in Claude's context window. This directly addresses some of the context collapse I described.
+
+The Bun migration is the canonical proof point. Jarred Sumner used Dynamic Workflows to port Bun from Zig to Rust, producing roughly 750,000 lines of Rust code with 99.8% of the existing test suite passing, completing the work in 11 days from first commit to merge. That is an extraordinary piece of execution.
+
+It is also a migration of existing, well-specified code, not original architecture. Someone decided what the system should be. Someone understood what Bun was, what its constraints were, what "correct" looked like. The agents executed it. That distinction is the whole argument.
+
+Dynamic Workflows makes Claude Code a dramatically more capable executor. It does not make it a better architect. If the architectural spec those subagents are executing is incoherent, you now have 1,000 subagents efficiently implementing an incoherent architecture. Speed of execution does not fix the quality of the thing being executed. It just surfaces the defect faster.
+
+What Dynamic Workflows actually does is narrow the execution gap to near zero on a wide class of engineering tasks. This accelerates Holland's argument rather than undermining it. As execution gets cheaper and more capable, the bottleneck shifts upstream. Architectural judgment becomes the work that can't be scheduled, parallelized, or orchestrated. It's the only step that isn't being automated, which means it's the step that actually matters now.
+
+## What I do differently now
+
+I still use Claude Code constantly. The answer is not to stop. The answer is to be precise about the division.
+
+Claude Code is excellent at implementing a well-specified architecture. It's excellent at generating the boilerplate for a service once I've decided what the service boundary is. It's excellent at drafting focused sections of a tech spec when given a clear scope, a clear set of constraints, and explicit context about what has already been decided. What it can't do is hold the full architectural intent of a complex system across a long, iterative document while reasoning about dependencies, making tradeoffs, and maintaining consistency across every section.
+
+For the Confluence spec, the fix was straightforward once I understood what was actually breaking: I stopped trying to generate the whole document in one session. I generated section by section, each in its own focused context window, with explicit handoffs summarizing what had been decided in the previous section. The Jira tickets got their own separate session, with the final approved spec as the only input. The output was dramatically better.
+
+This is not a workaround. It's a workflow that respects what the tool actually is. Claude Code is an extraordinarily capable executor when it has a clear, scoped task and enough context to complete it. It is not a system that can hold an entire engineering initiative in its head and reason about it the way a principal engineer does over weeks of refinement.
+
+The engineers who will be most effective with the tooling Anthropic is shipping in 2026 are not the ones who hand off the most. They're the ones who are clearest about which decisions require them and which ones don't. As execution gets automated, that clarity becomes the job.
+
+## Sources
+
+<ul className="sources-list">
+  <li><a href="https://www.hollandtech.net/claude-is-not-your-architect/">Claude Is Not Your Architect — Holland Tech — the original article arguing for the attaboy problem, accountability gap, and the "engineers design, agents implement" framework</a></li>
+  <li><a href="https://www.anthropic.com/news/claude-opus-4-8">Introducing Claude Opus 4.8 — Anthropic — official announcement of Opus 4.8, Dynamic Workflows, effort controls, and cheaper fast mode</a></li>
+  <li><a href="https://claude.com/blog/introducing-dynamic-workflows-in-claude-code">Introducing Dynamic Workflows in Claude Code — Anthropic Blog — detailed breakdown of how dynamic workflows orchestrate up to 1,000 subagents using JavaScript orchestration scripts outside the context window</a></li>
+  <li><a href="https://techcrunch.com/2026/05/28/anthropic-releases-opus-4-8-with-new-dynamic-workflow-tool/">Anthropic Releases Opus 4.8 with New Dynamic Workflow Tool — TechCrunch — coverage of the Bun/Zig to Rust migration as the primary proof of concept for dynamic workflow scale</a></li>
+  <li><a href="https://www.marktechpost.com/2026/05/28/anthropic-ships-claude-opus-4-8-alongside-dynamic-workflows-and-cheaper-fast-mode-with-workflows-capped-at-1000-subagents/">Anthropic Ships Claude Opus 4.8 Alongside Dynamic Workflows — MarkTechPost — technical breakdown of the 1,000 subagent cap, intermediate result storage, and how orchestration scripts bypass context window constraints</a></li>
+  <li><a href="https://www.morphllm.com/lost-in-the-middle-llm">Lost in the Middle: The U-Shaped Attention Problem Explained — Morph — clear explanation of the positional encoding decay effect and why LLMs systematically underattend to middle-context information</a></li>
+  <li><a href="https://arafetlamari.medium.com/lost-in-the-middle-how-language-models-really-use-long-context-and-why-it-matters-f80947336870">Lost in the Middle: How Language Models Really Use Long Context — Medium — coverage of the Liu et al. research and downstream implications for long-form document generation tasks</a></li>
+  <li><a href="https://atlan.com/know/llm-context-window-limitations/">LLM Context Window Limitations in 2026 — Atlan — production-focused overview of accuracy degradation patterns across current models and context window sizes</a></li>
+  <li><a href="https://harrisonsec.com/blog/claude-code-context-engineering-compression-pipeline/">How Claude Code Compresses Context: The 5-Level Pipeline — HarrisonSec — technical breakdown of Claude Code's autocompact pipeline and how compression affects state fidelity in long engineering sessions</a></li>
+  <li><a href="https://arxiv.org/html/2602.20478v1">Codified Context: Infrastructure for AI Agents in Complex Codebases — arXiv — research on why LLMs struggle with complex, multi-file projects due to context limitations and the architectural patterns that address them</a></li>
+  <li><a href="https://claudefa.st/blog/guide/mechanics/context-engineering">Claude Code Context Engineering: 6 Pillars Framework — claudefa.st — practitioner guide to context engineering in Claude Code including the brevity bias and autocompact failure modes</a></li>
+  <li><a href="https://www.futurefusiontechnologies.net/post/the-judgment-gap-why-ai-can-t-replace-the-soul-of-software-design">The Judgment Gap: Why AI Can't Replace the Soul of Software Design — Future Fusion Technologies — argues that architectural judgment, distributed systems reasoning, and cross-team decision-making remain structurally out of reach for current AI systems</a></li>
+  <li><a href="https://blink.new/blog/claude-code-dynamic-workflows">Claude Code Dynamic Workflows: Scale Agentic Tasks Across Your Entire Codebase — Blink — practical guide to what dynamic workflows are, what they are not, and the class of engineering tasks they handle well</a></li>
+</ul>
